@@ -4,12 +4,19 @@
 **
 **/
 
-package linda.whiteboard;
+package src.linda.whiteboard;
 
-import java.awt.event.*;
-import java.awt.*;
-import java.awt.geom.*;
-import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Panel;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  ** The graphic part of the whiteboard.
@@ -19,8 +26,11 @@ public class WhiteboardView implements MouseListener, MouseMotionListener {
 
     /** clear graphics before drawing lines (an erase command has been received) */
     private boolean clearFlag = false;
-    
-    public enum DrawMode { LINES, POINTS, OTHER };
+
+    public enum DrawMode {
+        LINES, POINTS, OTHER
+    };
+
     private DrawMode mode = DrawMode.LINES;
 
     private static Color BACKGROUND_COLOR = Color.white;
@@ -36,9 +46,9 @@ public class WhiteboardView implements MouseListener, MouseMotionListener {
 
     public WhiteboardView(WhiteboardModel model) {
         this.model = model;
-        
+
         Frame appFrame = new Frame("Whiteboard");
-        appFrame.setSize(WIDTH,HEIGHT);   
+        appFrame.setSize(WIDTH, HEIGHT);
         appFrame.setVisible(true);
         appFrame.setLayout(new BorderLayout());
 
@@ -53,15 +63,15 @@ public class WhiteboardView implements MouseListener, MouseMotionListener {
         drawing.addMouseListener(this);
 
         // Handle the user exiting/killing the application
-        appFrame.addWindowListener(new WindowAdapter()  {
-                  public void windowClosing (WindowEvent e) {
-                      model.terminate();
-                  }
-              } );
-        
+        appFrame.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                model.terminate();
+            }
+        });
+
         Graphics g = drawing.getGraphics();
         if (g != null)
-          this.paint(g);
+            this.paint(g);
         setDrawMode(DrawMode.LINES);
     }
 
@@ -90,14 +100,14 @@ public class WhiteboardView implements MouseListener, MouseMotionListener {
     private void paint(Graphics g) {
         if (clearFlag) {
             g.setColor(drawing.getBackground());
-            g.fillRect(0,0, drawing.getSize().width, drawing.getSize().height);
+            g.fillRect(0, 0, drawing.getSize().width, drawing.getSize().height);
             clearFlag = false;
         }
         g.setColor(drawing.getForeground());
         g.setPaintMode();
         for (ColoredShape rc : model.getLines()) {
             g.setColor(rc.color);
-            ((Graphics2D)g).draw(rc.shape);
+            ((Graphics2D) g).draw(rc.shape);
         }
         if (mode == DrawMode.LINES) {
             g.setXORMode(drawing.getBackground());
@@ -114,45 +124,48 @@ public class WhiteboardView implements MouseListener, MouseMotionListener {
 
     /**
      ** Set the draw mode.
-     ** @param mode - the draw mode
+     ** 
+     * @param mode - the draw mode
      */
     public void setDrawMode(DrawMode mode) {
         switch (mode) {
-          case LINES:
-          case POINTS:
-            this.mode = mode;
-            break;
-          default:
-            throw new IllegalArgumentException();
+            case LINES:
+            case POINTS:
+                this.mode = mode;
+                break;
+            default:
+                throw new IllegalArgumentException();
         }
     }
 
     /**
      ** The mouse was dragged.
-     ** @param e - the mouse event
+     ** 
+     * @param e - the mouse event
      */
     public void mouseDragged(MouseEvent e) {
         e.consume();
         switch (mode) {
-          case LINES:
-            xl = x2;
-            yl = y2;
-            x2 = e.getX();
-            y2 = e.getY();
-            break;
-          case POINTS:
-          default:
-            model.addShape(new ColoredShape(x1, y1, e.getX(), e.getY(), drawing.getForeground()));
-            x1 = e.getX();
-            y1 = e.getY();
-            break;
+            case LINES:
+                xl = x2;
+                yl = y2;
+                x2 = e.getX();
+                y2 = e.getY();
+                break;
+            case POINTS:
+            default:
+                model.addShape(new ColoredShape(x1, y1, e.getX(), e.getY(), drawing.getForeground()));
+                x1 = e.getX();
+                y1 = e.getY();
+                break;
         }
         redraw();
     }
 
     /**
      ** The mouse was moved.
-     ** @param e - the mouse event
+     ** 
+     * @param e - the mouse event
      */
     public void mouseMoved(MouseEvent e) {
         // not much to do here
@@ -160,65 +173,70 @@ public class WhiteboardView implements MouseListener, MouseMotionListener {
 
     /**
      ** The mouse button was pressed.
-     ** @param e - the mouse event
+     ** 
+     * @param e - the mouse event
      */
     public void mousePressed(MouseEvent e) {
         e.consume();
         switch (mode) {
-          case LINES:
-            x1 = e.getX();
-            y1 = e.getY();
-            x2 = -1;
-            break;
-          case POINTS:
-          default:
-            //model.addShape(new ColoredShape(e.getX(), e.getY(), -1, -1, drawing.getForeground()));
-            model.addShape(new ColoredShape(e.getX(), e.getY(), e.getX(), e.getY(), drawing.getForeground()));
-            x1 = e.getX();
-            y1 = e.getY();
-            drawing.repaint();
-            break;
+            case LINES:
+                x1 = e.getX();
+                y1 = e.getY();
+                x2 = -1;
+                break;
+            case POINTS:
+            default:
+                // model.addShape(new ColoredShape(e.getX(), e.getY(), -1, -1,
+                // drawing.getForeground()));
+                model.addShape(new ColoredShape(e.getX(), e.getY(), e.getX(), e.getY(), drawing.getForeground()));
+                x1 = e.getX();
+                y1 = e.getY();
+                drawing.repaint();
+                break;
         }
     }
 
     /**
      ** The mouse button was released.
-     ** @param e - the mouse event
+     ** 
+     * @param e - the mouse event
      */
     public void mouseReleased(MouseEvent e) {
         e.consume();
         switch (mode) {
-          case LINES:
-            model.addShape(new ColoredShape(x1, y1, e.getX(), e.getY(), drawing.getForeground()));
-            x2 = xl = -1;
-            break;
-          case POINTS:
-          default:
-            break;
+            case LINES:
+                model.addShape(new ColoredShape(x1, y1, e.getX(), e.getY(), drawing.getForeground()));
+                x2 = xl = -1;
+                break;
+            case POINTS:
+            default:
+                break;
         }
         redraw();
     }
 
     /**
      ** The mouse entered this panel.
-     ** @param e - the mouse event
+     ** 
+     * @param e - the mouse event
      */
     public void mouseEntered(MouseEvent e) {
     }
 
     /**
      ** The mouse left this panel.
-     ** @param e - the mouse event
+     ** 
+     * @param e - the mouse event
      */
     public void mouseExited(MouseEvent e) {
     }
 
     /**
      ** The mouse button was clicked.
-     ** @param e - the mouse event
+     ** 
+     * @param e - the mouse event
      */
     public void mouseClicked(MouseEvent e) {
     }
 
 }
-

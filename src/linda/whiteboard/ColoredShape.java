@@ -1,8 +1,8 @@
-package linda.whiteboard;
+package src.linda.whiteboard;
 
+import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.Line2D;
-import java.awt.Color;
 
 public class ColoredShape implements java.io.Serializable {
     public Shape shape;

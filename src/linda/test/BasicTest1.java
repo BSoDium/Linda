@@ -1,14 +1,15 @@
-package linda.test;
+package src.linda.test;
 
-import linda.*;
+import src.linda.Linda;
+import src.linda.Tuple;
 
 public class BasicTest1 {
 
     public static void main(String[] a) {
-                
-        final Linda linda = new linda.shm.CentralizedLinda();
+
+        final Linda linda = new src.linda.shm.CentralizedLinda();
         // final Linda linda = new linda.server.LindaClient("//localhost:4000/aaa");
-                
+
         new Thread() {
             public void run() {
                 try {
@@ -22,7 +23,7 @@ public class BasicTest1 {
                 linda.debug("(1)");
             }
         }.start();
-                
+
         new Thread() {
             public void run() {
                 try {
@@ -46,11 +47,11 @@ public class BasicTest1 {
                 Tuple t3 = new Tuple(4, "foo");
                 System.out.println("(2) write: " + t3);
                 linda.write(t3);
-                                
+
                 linda.debug("(2)");
 
             }
         }.start();
-                
+
     }
 }

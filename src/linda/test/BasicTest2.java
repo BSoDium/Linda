@@ -1,16 +1,18 @@
-package linda.test;
+package src.linda.test;
 
-import linda.*;
+import src.linda.Linda;
+import src.linda.Tuple;
 
 public class BasicTest2 {
 
     public static void main(String[] a) {
-        final Linda linda = new linda.shm.CentralizedLinda();
-        //              final Linda linda = new linda.server.LindaClient("//localhost:4000/MonServeur");
-                
+        final Linda linda = new src.linda.shm.CentralizedLinda();
+        // final Linda linda = new
+        // linda.server.LindaClient("//localhost:4000/MonServeur");
+
         for (int i = 1; i <= 3; i++) {
             final int j = i;
-            new Thread() {  
+            new Thread() {
                 public void run() {
                     try {
                         Thread.sleep(2);
@@ -19,12 +21,12 @@ public class BasicTest2 {
                     }
                     Tuple motif = new Tuple(Integer.class, String.class);
                     Tuple res = linda.read(motif);
-                    System.out.println("("+j+") Resultat:" + res);
-                    linda.debug("("+j+")");
+                    System.out.println("(" + j + ") Resultat:" + res);
+                    linda.debug("(" + j + ")");
                 }
             }.start();
         }
-                
+
         new Thread() {
             public void run() {
                 try {
@@ -46,11 +48,11 @@ public class BasicTest2 {
                 Tuple t3 = new Tuple(4, "foo");
                 System.out.println("(0) write: " + t3);
                 linda.write(t3);
-                                
+
                 linda.debug("(0)");
 
             }
         }.start();
-                
+
     }
 }

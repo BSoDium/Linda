@@ -1,15 +1,16 @@
-package linda.whiteboard;
-
-import java.util.*;
+package src.linda.whiteboard;
 
 public class Command implements java.io.Serializable {
-    enum Action { DRAW, ERASEALL, ROTATE, LOCK, UNLOCK };
+    enum Action {
+        DRAW, ERASEALL, ROTATE, LOCK, UNLOCK
+    };
 
     public Action action;
     public ColoredShape shape; // only if action = DRAW
     public int angle; // in degrees; only if action = ROTATE
 
-    private Command() {}
+    private Command() {
+    }
 
     public static Command newCommandLock() {
         Command c = new Command();

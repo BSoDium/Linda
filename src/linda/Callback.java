@@ -1,11 +1,14 @@
-package linda;
+package src.linda;
 
-/** Callback when a tuple appears.
+/**
+ * Callback when a tuple appears.
+ * 
  * @author philippe.queinnec@enseeiht.fr
-*/
+ */
 public interface Callback {
 
-    /** Callback when a tuple appears. 
+    /**
+     * Callback when a tuple appears.
      * See Linda.eventRegister for details.
      * 
      * @param t the new tuple

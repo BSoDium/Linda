@@ -4,10 +4,23 @@
 **
 **/
 
-package linda.whiteboard;
+package src.linda.whiteboard;
 
-import java.awt.event.*;
-import java.awt.*;
+import java.awt.Button;
+import java.awt.Checkbox;
+import java.awt.CheckboxGroup;
+import java.awt.Choice;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Panel;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 /**
  ** The controls for the whiteboard.
@@ -27,35 +40,39 @@ public class WhiteboardControls extends Panel implements ItemListener {
     private Button eraseAllButton;
     private Button rotateButton;
     private Button exitButton;
-    
+
     private Button exclusiveButton;
     private ExclusiveButtonAction exclusiveButtonAction;
-    
+
     /**
      ** The constructor.
      **
      ** @param target - the whiteboard panel
      */
     public WhiteboardControls(WhiteboardView view, WhiteboardModel model) {
-        
+
         this.view = view;
         this.model = model;
         Panel pLine1 = new Panel();
         Panel pLine2 = new Panel();
-        setLayout(new GridLayout(2,1));
+        setLayout(new GridLayout(2, 1));
         add(pLine1);
         add(pLine2);
-        
+
         pLine1.setLayout(new FlowLayout());
-        
+
         eraseAllButton = new Button();
         eraseAllButton.setLabel(ERASEALL_LABEL);
-        eraseAllButton.addActionListener((e) -> { model.eraseAll(); });
+        eraseAllButton.addActionListener((e) -> {
+            model.eraseAll();
+        });
         pLine1.add(eraseAllButton);
-        
+
         rotateButton = new Button();
         rotateButton.setLabel(ROTATE_LABEL);
-        rotateButton.addActionListener((e) -> { model.rotateAll(90); });
+        rotateButton.addActionListener((e) -> {
+            model.rotateAll(90);
+        });
         pLine1.add(rotateButton);
 
         exclusiveButton = new Button();
@@ -63,15 +80,17 @@ public class WhiteboardControls extends Panel implements ItemListener {
         exclusiveButtonAction = new ExclusiveButtonAction(exclusiveButton, model);
         exclusiveButton.addActionListener(exclusiveButtonAction);
         pLine1.add(exclusiveButton);
-        
+
         exitButton = new Button();
         exitButton.setLabel(EXIT_LABEL);
-        exitButton.addActionListener((e) -> { model.terminate(); });
+        exitButton.addActionListener((e) -> {
+            model.terminate();
+        });
         pLine1.add(exitButton);
 
         pLine1.setBackground(Color.lightGray);
         pLine2.setBackground(Color.lightGray);
-                
+
         view.drawing.setForeground(Color.red);
         CheckboxGroup group = new CheckboxGroup();
         Checkbox b;
@@ -94,7 +113,7 @@ public class WhiteboardControls extends Panel implements ItemListener {
         b.addItemListener(this);
         b.setBackground(Color.black);
         view.drawing.setForeground(b.getForeground());
-        
+
         Choice shapes = new Choice();
         shapes.addItemListener(this);
         shapes.addItem("Lines");
@@ -121,14 +140,14 @@ public class WhiteboardControls extends Panel implements ItemListener {
      */
     public void itemStateChanged(ItemEvent e) {
         if (e.getSource() instanceof Checkbox) {
-            view.drawing.setForeground(((Component)e.getSource()).getBackground());
+            view.drawing.setForeground(((Component) e.getSource()).getBackground());
         } else if (e.getSource() instanceof Choice) {
             String choice = (String) e.getItem();
             if (choice.equals("Lines")) {
                 view.setDrawMode(WhiteboardView.DrawMode.LINES);
             } else if (choice.equals("Points")) {
                 view.setDrawMode(WhiteboardView.DrawMode.POINTS);
-            } 
+            }
         }
     }
 
@@ -146,8 +165,8 @@ public class WhiteboardControls extends Panel implements ItemListener {
             target = t;
         }
 
-       public void actionPerformed(ActionEvent e) {
-            if (! hasExclusive) {
+        public void actionPerformed(ActionEvent e) {
+            if (!hasExclusive) {
                 target.acquireExclusiveAccess();
                 exclusiveButtonAction.hasExclusive = true;
                 exclusiveButton.setLabel(RELEASE_LABEL);
@@ -160,4 +179,3 @@ public class WhiteboardControls extends Panel implements ItemListener {
     }
 
 }
-

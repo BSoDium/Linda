@@ -1,33 +1,31 @@
 
-package linda.test;
+package src.linda.test;
 
-import linda.*;
-import linda.Linda.eventMode;
-import linda.Linda.eventTiming;
+import src.linda.AsynchronousCallback;
+import src.linda.Callback;
+import src.linda.Linda;
+import src.linda.Linda.eventMode;
+import src.linda.Linda.eventTiming;
+import src.linda.Tuple;
 
-public class BasicTestCallback {
+public class BasicTestAsyncCallback {
 
-    private static Linda linda;
-    private static Tuple cbmotif;
-    
     private static class MyCallback implements Callback {
         public void call(Tuple t) {
-            System.out.println("CB got "+t);
-            linda.eventRegister(eventMode.TAKE, eventTiming.IMMEDIATE, cbmotif, this);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
             }
-            System.out.println("CB done with "+t);
+            System.out.println("Got " + t);
         }
     }
 
     public static void main(String[] a) {
-        linda = new linda.shm.CentralizedLinda();
-        // linda = new linda.server.LindaClient("//localhost:4000/MonServeur");
+        Linda linda = new src.linda.shm.CentralizedLinda();
+        // Linda linda = new linda.server.LindaClient("//localhost:4000/MonServeur");
 
-        cbmotif = new Tuple(Integer.class, String.class);
-        linda.eventRegister(eventMode.TAKE, eventTiming.IMMEDIATE, cbmotif, new MyCallback());
+        Tuple motif = new Tuple(Integer.class, String.class);
+        linda.eventRegister(eventMode.TAKE, eventTiming.IMMEDIATE, motif, new AsynchronousCallback(new MyCallback()));
 
         Tuple t1 = new Tuple(4, 5);
         System.out.println("(2) write: " + t1);

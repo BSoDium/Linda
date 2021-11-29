@@ -1,12 +1,12 @@
-package linda.search.basic;
+package src.linda.search.basic;
 
-import java.util.UUID;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.stream.Stream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import linda.*;
+import java.util.UUID;
+import java.util.stream.Stream;
+
+import src.linda.Linda;
+import src.linda.Tuple;
 
 public class Manager implements Runnable {
 
@@ -28,7 +28,8 @@ public class Manager implements Runnable {
         this.search = search;
         this.reqUUID = UUID.randomUUID();
         System.out.println("Search " + this.reqUUID + " for " + this.search);
-        linda.eventRegister(Linda.eventMode.TAKE, Linda.eventTiming.IMMEDIATE, new Tuple(Code.Result, this.reqUUID, String.class, Integer.class), new CbGetResult());
+        linda.eventRegister(Linda.eventMode.TAKE, Linda.eventTiming.IMMEDIATE,
+                new Tuple(Code.Result, this.reqUUID, String.class, Integer.class), new CbGetResult());
         linda.write(new Tuple(Code.Request, this.reqUUID, this.search));
     }
 
@@ -46,8 +47,8 @@ public class Manager implements Runnable {
         System.out.println("query done");
     }
 
-    private class CbGetResult implements linda.Callback {
-        public void call(Tuple t) {  // [ Result, ?UUID, ?String, ?Integer ]
+    private class CbGetResult implements src.linda.Callback {
+        public void call(Tuple t) { // [ Result, ?UUID, ?String, ?Integer ]
             String s = (String) t.get(2);
             Integer v = (Integer) t.get(3);
             if (v < bestvalue) {
@@ -55,7 +56,8 @@ public class Manager implements Runnable {
                 bestresult = s;
                 System.out.println("New best (" + bestvalue + "): \"" + bestresult + "\"");
             }
-            linda.eventRegister(Linda.eventMode.TAKE, Linda.eventTiming.IMMEDIATE, new Tuple(Code.Result, reqUUID, String.class, Integer.class), this);
+            linda.eventRegister(Linda.eventMode.TAKE, Linda.eventTiming.IMMEDIATE,
+                    new Tuple(Code.Result, reqUUID, String.class, Integer.class), this);
         }
     }
 

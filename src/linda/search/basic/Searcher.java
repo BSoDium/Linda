@@ -1,8 +1,10 @@
-package linda.search.basic;
+package src.linda.search.basic;
 
-import linda.*;
 import java.util.Arrays;
 import java.util.UUID;
+
+import src.linda.Linda;
+import src.linda.Tuple;
 
 public class Searcher implements Runnable {
 
@@ -15,7 +17,7 @@ public class Searcher implements Runnable {
     public void run() {
         System.out.println("Ready to do a search");
         Tuple treq = linda.read(new Tuple(Code.Request, UUID.class, String.class));
-        UUID reqUUID = (UUID)treq.get(1);
+        UUID reqUUID = (UUID) treq.get(1);
         String req = (String) treq.get(2);
         Tuple tv;
         System.out.println("Looking for: " + req);
@@ -28,7 +30,7 @@ public class Searcher implements Runnable {
         }
         linda.write(new Tuple(Code.Searcher, "done", reqUUID));
     }
-    
+
     /*****************************************************************/
 
     /* Levenshtein distance is rather slow */
@@ -39,15 +41,13 @@ public class Searcher implements Runnable {
             for (int j = 0; j <= y.length(); j++) {
                 if (i == 0) {
                     dp[i][j] = j;
-                }
-                else if (j == 0) {
+                } else if (j == 0) {
                     dp[i][j] = i;
-                }
-                else {
-                    dp[i][j] = min(dp[i - 1][j - 1] 
-                                   + costOfSubstitution(x.charAt(i - 1), y.charAt(j - 1)), 
-                                   dp[i - 1][j] + 1, 
-                                   dp[i][j - 1] + 1);
+                } else {
+                    dp[i][j] = min(dp[i - 1][j - 1]
+                            + costOfSubstitution(x.charAt(i - 1), y.charAt(j - 1)),
+                            dp[i - 1][j] + 1,
+                            dp[i][j - 1] + 1);
                 }
             }
         }
@@ -63,4 +63,3 @@ public class Searcher implements Runnable {
     }
 
 }
-

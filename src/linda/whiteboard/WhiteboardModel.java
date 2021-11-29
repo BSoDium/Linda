@@ -4,16 +4,17 @@
 **
 **/
 
-package linda.whiteboard;
+package src.linda.whiteboard;
 
-import java.awt.event.*;
-import java.awt.*;
-import java.awt.geom.*;
-import java.util.*;
+import java.awt.geom.AffineTransform;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
-import linda.*;
-import linda.Linda.eventMode;
-import linda.Linda.eventTiming;
+import src.linda.Linda;
+import src.linda.Linda.eventMode;
+import src.linda.Linda.eventTiming;
+import src.linda.Tuple;
 
 /**
  ** The model of the whiteboard.
@@ -37,12 +38,14 @@ public class WhiteboardModel {
     private static final String KEY_WHITEBOARD = "Whiteboard";
 
     /** The commands that can be sent on the tuple spaces. */
-    enum Command { DRAW, ERASEALL, ROTATE };
+    enum Command {
+        DRAW, ERASEALL, ROTATE
+    };
 
     /** The lines and their respective colors that this client knows about. */
     private Set<ColoredShape> lines = new HashSet<>();
 
-    private boolean eraseFlag = false;   // set true when erase command received
+    private boolean eraseFlag = false; // set true when erase command received
 
     private Tuple motifShape = new Tuple(KEY_WHITEBOARD, Command.DRAW, ColoredShape.class);
     private Tuple motifErase = new Tuple(KEY_WHITEBOARD, Command.ERASEALL);
@@ -50,7 +53,7 @@ public class WhiteboardModel {
 
     public WhiteboardModel() {
     }
-    
+
     public void setView(WhiteboardView view) {
         this.view = view;
     }
@@ -71,14 +74,14 @@ public class WhiteboardModel {
         Collection<Tuple> tupleSet = linda.readAll(motifShape);
         for (Tuple t : tupleSet) {
             System.out.println("Tuple " + t);
-            ColoredShape line = (ColoredShape)t.get(2);
+            ColoredShape line = (ColoredShape) t.get(2);
             lines.add(line);
         }
 
         // and redraw the view
         view.redraw();
     }
-    
+
     /**
      ** This is called when the windowClosing event arrives.
      */
@@ -86,7 +89,8 @@ public class WhiteboardModel {
         System.exit(0);
     }
 
-    /** Global Erase of the whiteboard.
+    /**
+     * Global Erase of the whiteboard.
      ** Since we will be informed of this in the callback,
      ** we will let the callback update the set of all lines.
      */
@@ -98,8 +102,8 @@ public class WhiteboardModel {
         linda.write(new Tuple(KEY_WHITEBOARD, Command.ERASEALL));
         // and delete this tuple (potential synchronization problem !)
         linda.takeAll(new Tuple(KEY_WHITEBOARD, Command.ERASEALL));
-    }	
-    
+    }
+
     /** Rotate all the shapes. */
     public void rotateAll(int degree) {
         System.out.println("Rotate");
@@ -110,7 +114,8 @@ public class WhiteboardModel {
         linda.takeAll(action);
     }
 
-    /** Request an exclusive access to the whiteboard.
+    /**
+     * Request an exclusive access to the whiteboard.
      * Block until it has succeeded.
      */
     public void acquireExclusiveAccess() {
@@ -125,50 +130,49 @@ public class WhiteboardModel {
     /**
      ** Publish a new shape (line or point) to the tuple space
      */
-    public void addShape (ColoredShape shape)
-    {
+    public void addShape(ColoredShape shape) {
         // Build a new rectangle tuple and write it into the tuple space.
-    	Tuple publish = new Tuple(KEY_WHITEBOARD, Command.DRAW, shape);
-    	linda.write(publish);
+        Tuple publish = new Tuple(KEY_WHITEBOARD, Command.DRAW, shape);
+        linda.write(publish);
     }
 
     /***************************************************************/
-    
-    private class CallbackShape implements linda.Callback {
-		public void call(Tuple t) {
-			System.out.println("Draw Request received from server");
-                        ColoredShape shape = (ColoredShape)(t.get(2));
-                        lines.add(shape);
-                        view.redraw();
-                        linda.eventRegister(eventMode.READ, eventTiming.FUTURE, motifShape, this);
-                }
+
+    private class CallbackShape implements src.linda.Callback {
+        public void call(Tuple t) {
+            System.out.println("Draw Request received from server");
+            ColoredShape shape = (ColoredShape) (t.get(2));
+            lines.add(shape);
+            view.redraw();
+            linda.eventRegister(eventMode.READ, eventTiming.FUTURE, motifShape, this);
+        }
     }
 
-    private class CallbackErase implements linda.Callback {
-		public void call(Tuple t) {
-			System.out.println("Erase Request received from server");
-                        lines.clear();
-                        view.setClear();
-                        linda.eventRegister(eventMode.READ, eventTiming.FUTURE, motifErase, this);
-		}	
+    private class CallbackErase implements src.linda.Callback {
+        public void call(Tuple t) {
+            System.out.println("Erase Request received from server");
+            lines.clear();
+            view.setClear();
+            linda.eventRegister(eventMode.READ, eventTiming.FUTURE, motifErase, this);
+        }
     }
-    
-    private class CallbackRotate implements linda.Callback {
-		public void call(Tuple t) {
-			System.out.println("Rotate Request received from server");
-                        Integer angle = (Integer)(t.get(2));
-                        // Let's be careful: rotation with center in WIDTH/2, HEIGHT/2
-                        AffineTransform at = new AffineTransform();
-                        at.rotate(Math.toRadians(angle), view.drawing.getSize().width / 2.0, view.drawing.getSize().height / 2.0);
-                        //at.quadrantRotate(1, view.drawing.getSize().width / 2.0, view.drawing.getSize().height / 2.0);
-                        for (ColoredShape rc : lines) {
-                            rc.shape = at.createTransformedShape(rc.shape);
-                        }
-                        view.setClear();
-                        view.redraw();
-                        linda.eventRegister(eventMode.READ, eventTiming.FUTURE, motifRotate, this);
-                }
+
+    private class CallbackRotate implements src.linda.Callback {
+        public void call(Tuple t) {
+            System.out.println("Rotate Request received from server");
+            Integer angle = (Integer) (t.get(2));
+            // Let's be careful: rotation with center in WIDTH/2, HEIGHT/2
+            AffineTransform at = new AffineTransform();
+            at.rotate(Math.toRadians(angle), view.drawing.getSize().width / 2.0, view.drawing.getSize().height / 2.0);
+            // at.quadrantRotate(1, view.drawing.getSize().width / 2.0,
+            // view.drawing.getSize().height / 2.0);
+            for (ColoredShape rc : lines) {
+                rc.shape = at.createTransformedShape(rc.shape);
+            }
+            view.setClear();
+            view.redraw();
+            linda.eventRegister(eventMode.READ, eventTiming.FUTURE, motifRotate, this);
+        }
     }
 
 }
-
