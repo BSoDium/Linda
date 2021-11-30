@@ -52,6 +52,7 @@ public class Tuple extends LinkedList<Serializable> implements Serializable {
      * Returns true if this tuple matches the given template.
      * Matching rules : a tuple matches a template if all their components match two
      * by two.
+     * 
      * Two components match :
      * - if they are both values and are equals;
      * - if the template component is a class/interface, and the tuple component is
