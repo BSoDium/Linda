@@ -15,42 +15,42 @@
       "name": "Launch Main",
       "request": "launch",
       "mainClass": "src.linda.search.basic.Main",
-      "projectName": "linda_dff71aaa"
+      "projectName": "linda_b419fb04"
     },
     {
       "type": "java",
       "name": "Launch BasicTest1",
       "request": "launch",
       "mainClass": "src.linda.test.BasicTest1",
-      "projectName": "linda_dff71aaa"
+      "projectName": "linda_b419fb04"
     },
     {
       "type": "java",
       "name": "Launch BasicTest2",
       "request": "launch",
       "mainClass": "src.linda.test.BasicTest2",
-      "projectName": "linda_dff71aaa"
+      "projectName": "linda_b419fb04"
     },
     {
       "type": "java",
       "name": "Launch BasicTestAsyncCallback",
       "request": "launch",
       "mainClass": "src.linda.test.BasicTestAsyncCallback",
-      "projectName": "linda_dff71aaa"
+      "projectName": "linda_b419fb04"
     },
     {
       "type": "java",
       "name": "Launch BasicTestCallback",
       "request": "launch",
       "mainClass": "src.linda.test.BasicTestCallback",
-      "projectName": "linda_dff71aaa"
+      "projectName": "linda_b419fb04"
     },
     {
       "type": "java",
       "name": "Launch Whiteboard",
       "request": "launch",
       "mainClass": "src.linda.whiteboard.Whiteboard",
-      "projectName": "linda_dff71aaa"
+      "projectName": "linda_b419fb04"
     }
   ]
 }
