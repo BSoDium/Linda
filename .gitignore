@@ -1,3 +1,7 @@
 desktop.ini
 *.synctex.gz
-/doc/_minted-main
+/doc/report/_minted-main
+/doc/report/*.log
+/doc/report/*.out
+/doc/report/*.toc
+/doc/report/*.aux

@@ -1,0 +1,1 @@
+{"rule":"PAS_DE_TRAIT_UNION","sentence":"^\\Qune version dite \"locale\" à base de mémoire partagée (shm package Figure \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q) une version dite \"distante\" à base de clients / mono-serveur (server package Figure \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q)\\E$"}
