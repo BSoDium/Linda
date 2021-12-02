@@ -12,36 +12,57 @@ import src.linda.Tuple;
 
 /** Shared memory implementation of Linda. */
 public class CentralizedLinda implements Linda {
-  private ArrayList<Tuple> database;
-  private HashMap<Tuple, Callback> readCallbacks;
-  private HashMap<Tuple, Callback> takeCallbacks;
-  private Semaphore mutex;
+  private ArrayListSync<Tuple> database;
+  private HashMapSync<Tuple, Callback> readCallbacks;
+  private HashMapSync<Tuple, Callback> takeCallbacks;
 
   public CentralizedLinda() {
-    database = new ArrayList<Tuple>();
-    readCallbacks = new HashMap<Tuple, Callback>();
-    takeCallbacks = new HashMap<Tuple, Callback>();
-    mutex = new Semaphore(1);
+    database = new ArrayListSync<Tuple>();
+    readCallbacks = new HashMapSync<Tuple, Callback>();
+    takeCallbacks = new HashMapSync<Tuple, Callback>();
   }
+  
+  /**
+   * A simple routine to run a task and block until it is complete.
+   * <p>
+   * Note: this is currently not used.
+   * </p>
+   * 
+   * @param r
+   */
+  private void runWithRetry(Runnable r) {
+    double retryTime = 1; // seconds
+
+    while (true) {
+      // wait retryTime seconds before retrying
+      try {
+        Thread.sleep((long) (retryTime * 1000));
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      retryTime = retryTime * 2;
+      System.out.println("Retrying...");
+      // retry
+      r.run();
+    }
+  }
+
+
 
   @Override
   public void write(Tuple t) {
-    mutex.acquireUninterruptibly();
     database.add(t);
     runCallBacks();
-    mutex.release();
   }
 
   @Override
   public Tuple take(Tuple template) {
-    mutex.acquireUninterruptibly();
     double retryTime = 1; // seconds
 
     for (Tuple t : database) {
       if (t.matches(template)) {
         database.remove(t);
         runCallBacks();
-        mutex.release();
         return t;
       }
     }
@@ -59,7 +80,6 @@ public class CentralizedLinda implements Linda {
         if (t.matches(template)) {
           database.remove(t);
           runCallBacks();
-          mutex.release();
           return t;
         }
       }
@@ -68,12 +88,10 @@ public class CentralizedLinda implements Linda {
 
   @Override
   public Tuple read(Tuple template) {
-    mutex.acquireUninterruptibly();
     double retryTime = 1; // seconds
 
     for (Tuple t : database) {
       if (t.matches(template)) {
-        mutex.release();
         return t;
       }
     }
@@ -90,7 +108,6 @@ public class CentralizedLinda implements Linda {
       // retry
       for (Tuple t : database) {
         if (t.matches(template)) {
-          mutex.release();
           return t;
         }
       }
@@ -99,35 +116,28 @@ public class CentralizedLinda implements Linda {
 
   @Override
   public Tuple tryTake(Tuple template) {
-    mutex.acquireUninterruptibly();
     for (Tuple t : database) {
       if (t.matches(template)) {
         database.remove(t);
         runCallBacks();
-        mutex.release();
         return t;
       }
     }
-    mutex.release();
     return null;
   }
 
   @Override
   public Tuple tryRead(Tuple template) {
-    mutex.acquireUninterruptibly();
     for (Tuple t : database) {
       if (t.matches(template)) {
-        mutex.release();
         return t;
       }
     }
-    mutex.release();
     return null;
   }
 
   @Override
   public Collection<Tuple> takeAll(Tuple template) {
-    mutex.acquireUninterruptibly();
     ArrayList<Tuple> ret = new ArrayList<Tuple>();
     for (Tuple t : database) {
       if (t.matches(template)) {
@@ -136,20 +146,17 @@ public class CentralizedLinda implements Linda {
       }
     }
     runCallBacks();
-    mutex.release();
     return ret;
   }
 
   @Override
   public Collection<Tuple> readAll(Tuple template) {
-    mutex.acquireUninterruptibly();
     ArrayList<Tuple> ret = new ArrayList<Tuple>();
     for (Tuple t : database) {
       if (t.matches(template)) {
         ret.add(t);
       }
     }
-    mutex.release();
     return ret;
   }
 
@@ -201,13 +208,13 @@ public class CentralizedLinda implements Linda {
    */
   private void runCallBacks() {
     for (Tuple t : database) {
-      readCallbacks.keySet().forEach(key -> {
+      readCallbacks.forEachKey(key -> {
         if (t.matches(key)) {
           readCallbacks.get(key).call(t);
           readCallbacks.remove(key);
         }
       });
-      takeCallbacks.keySet().forEach(key -> {
+      takeCallbacks.forEachKey(key -> {
         if (t.matches(key)) {
           takeCallbacks.get(key).call(t);
           takeCallbacks.remove(key);
@@ -216,29 +223,5 @@ public class CentralizedLinda implements Linda {
     }
   }
 
-  /**
-   * A simple routine to run a task and block until it is complete.
-   * <p>
-   * Note: this is currently not used.
-   * </p>
-   * 
-   * @param r
-   */
-  private void runWithRetry(Runnable r) {
-    double retryTime = 1; // seconds
-
-    while (true) {
-      // wait retryTime seconds before retrying
-      try {
-        Thread.sleep((long) (retryTime * 1000));
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-      retryTime = retryTime * 2;
-      System.out.println("Retrying...");
-      // retry
-      r.run();
-    }
-  }
 
 }
