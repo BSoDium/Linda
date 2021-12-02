@@ -1,0 +1,36 @@
+\documentclass{sebaClass}
+\usepackage{float}
+\usepackage{bm}
+\usepackage{siunitx}
+
+\title{Projet}
+\author{Ying, Philippe et Sébastien}
+\date{30 novembre 2021}
+
+\newcommand{\SubTitle}{Projet systèmes concurrents/intergiciels}
+\newcommand{\Subject}{Linda}
+\newcommand{\Place}{ENSEEIHT}
+
+\renewcommand{\Language}{text}
+\newcommand{\cFF}[3]{\codeFromFile{text}{#1}{#2}{#3}}
+\newcommand{\cFFS}[1]{\codeFromFileSimple{text}{#1}}
+\newcommand{\cFFSC}[1]{\codeFromFileSimpleContinuousLine{text}{#1}}
+\newcommand{\sFF}[3]{\shellFromFile{#1}{#2}{#3}}
+\newcommand{\q}[1]{\textit{\textbf{#1}}\\}
+\newcommand{\ql}[1]{\textit{\textbf{#1}}}
+\newcommand{\rt}[1]{\textcolor{redl}{#1}}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+% \listoffigures
+
+\vspace*{\fill}
+\textit{\underline{Remarque:} Ceci est le document réponse, il ne reprend pas l'intégralité du sujet.}
+\newpage
+
+\section{Introduction}
+\input{src/part-01/main.tex}
+
+\end{document}

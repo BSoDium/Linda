@@ -1,0 +1,19 @@
+@startuml mainCD
+
+interface Linda
+
+package server{
+    class LindaServer
+    class LindaClient
+}
+
+package shm{
+    class CentralizedLinda
+}
+
+
+CentralizedLinda -u-|> Linda
+LindaServer -u-|> Linda
+
+
+@enduml

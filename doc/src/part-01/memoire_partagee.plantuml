@@ -1,0 +1,8 @@
+@startuml Version Mémoire Partagée
+
+node "Other Groups" {
+  FTP - [Second Component]
+  [First Component] --> FTP
+}
+
+@endumléh
