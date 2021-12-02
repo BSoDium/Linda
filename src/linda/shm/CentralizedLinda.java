@@ -175,13 +175,13 @@ public class CentralizedLinda implements Linda {
     if (timing == eventTiming.IMMEDIATE) {
       for (Tuple t : database) {
         if (t.matches(template)) {
-          callback.call(t);
           if (mode == eventMode.TAKE) {
             takeCallbacks.remove(template);
             database.remove(t);
           } else if (mode == eventMode.READ) {
             readCallbacks.remove(template);
           }
+          callback.call(t);
         }
       }
     }
@@ -195,11 +195,11 @@ public class CentralizedLinda implements Linda {
     }
     System.out.println(prefix + " Read callbacks:");
     for (Tuple t : readCallbacks.keySet()) {
-      System.out.println(prefix + "  | " + t);
+      System.out.println(prefix + "  | " + t + " -> " + readCallbacks.get(t));
     }
     System.out.println(prefix + " Take callbacks:");
     for (Tuple t : takeCallbacks.keySet()) {
-      System.out.println(prefix + "  | " + t);
+      System.out.println(prefix + "  | " + t + " -> " + takeCallbacks.get(t));
     }
   }
 
@@ -207,20 +207,23 @@ public class CentralizedLinda implements Linda {
    * Run all active callbacks.
    */
   private void runCallBacks() {
-    for (Tuple t : database) {
-      readCallbacks.forEachKey(key -> {
+    readCallbacks.forEachKey(key -> {
+      for (Tuple t : database.clone()) {
         if (t.matches(key)) {
           readCallbacks.get(key).call(t);
           readCallbacks.remove(key);
         }
-      });
-      takeCallbacks.forEachKey(key -> {
+      }
+    });
+    takeCallbacks.forEachKey(key -> {
+      for (Tuple t : database.clone()) {
         if (t.matches(key)) {
+          database.remove(t);
           takeCallbacks.get(key).call(t);
           takeCallbacks.remove(key);
         }
-      });
-    }
+      }
+    });
   }
 
 

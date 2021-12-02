@@ -35,10 +35,26 @@ public class HashMapSync<A, B> extends HashMap<A, B> {
     }
   }
 
+  /**
+   * Calls the given consumer for each key in the map.
+   * @param consumer
+   */
   public void forEachKey(Consumer<? super A> consumer) {
     synchronized (lock) {
       for (A key : keySet()) {
         consumer.accept(key);
+      }
+    }
+  }
+
+  /**
+   * Calls the given consumer for each value in the map.
+   * @param consumer
+   */
+  public void forEachValue(Consumer<? super B> consumer) {
+    synchronized (lock) {
+      for (B value : values()) {
+        consumer.accept(value);
       }
     }
   }
