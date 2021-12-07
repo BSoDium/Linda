@@ -9,13 +9,12 @@ import src.linda.Linda;
 import src.linda.Tuple;
 
 /** Shared memory implementation of Linda. */
-public class CentralizedLinda implements Linda {
+public class PrimitiveCentralizedLinda implements Linda {
   private ArrayListSync<Tuple> database;
   private HashMapSync<Tuple, Callback> readCallbacks;
   private HashMapSync<Tuple, Callback> takeCallbacks;
-  private final Object lock = new Object();
 
-  public CentralizedLinda() {
+  public PrimitiveCentralizedLinda() {
     database = new ArrayListSync<Tuple>();
     readCallbacks = new HashMapSync<Tuple, Callback>();
     takeCallbacks = new HashMapSync<Tuple, Callback>();
@@ -25,10 +24,6 @@ public class CentralizedLinda implements Linda {
   public void write(Tuple t) {
     database.add(t);
     runCallBacks();
-    // wake up all waiting threads after a write
-    synchronized (lock) {
-      lock.notifyAll();
-    }
   }
 
   @Override
@@ -42,16 +37,16 @@ public class CentralizedLinda implements Linda {
       }
     }
 
-    // block until a matching tuple is found (multithreaded version)
+    // block until a matching tuple is found (cpu-intensive version)
+    double retryTime = 1; // seconds
     while (true) {
+      // wait retryTime seconds before retrying
       try {
-        // wait for a matching tuple to be added to the database
-        synchronized (lock) {
-          lock.wait();
-        }
+        Thread.sleep((long) (retryTime * 1000));
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
+      retryTime = retryTime * 2;
       // retry
       for (Tuple t : database) {
         if (t.matches(template)) {
@@ -72,16 +67,16 @@ public class CentralizedLinda implements Linda {
       }
     }
 
-    // block until a matching tuple is found (multithreaded version)
+    // block until a matching tuple is found (cpu-intensive version)
+    double retryTime = 1; // seconds
     while (true) {
+      // wait retryTime seconds before retrying
       try {
-        // wait for a matching tuple to be added to the database
-        synchronized (lock) {
-          lock.wait();
-        }
+        Thread.sleep((long) (retryTime * 1000));
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
+      retryTime = retryTime * 2;
       // retry
       for (Tuple t : database) {
         if (t.matches(template)) {
