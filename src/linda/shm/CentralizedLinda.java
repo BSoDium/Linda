@@ -21,33 +21,6 @@ public class CentralizedLinda implements Linda {
     readCallbacks = new HashMapSync<Tuple, Callback>();
     takeCallbacks = new HashMapSync<Tuple, Callback>();
   }
-  
-  /**
-   * A simple routine to run a task and block until it is complete.
-   * <p>
-   * Note: this is currently not used.
-   * </p>
-   * 
-   * @param r
-   */
-  private void runWithRetry(Runnable r) {
-    double retryTime = 1; // seconds
-
-    while (true) {
-      // wait retryTime seconds before retrying
-      try {
-        Thread.sleep((long) (retryTime * 1000));
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-      retryTime = retryTime * 2;
-      System.out.println("Retrying...");
-      // retry
-      r.run();
-    }
-  }
-
-
 
   @Override
   public void write(Tuple t) {
@@ -57,7 +30,6 @@ public class CentralizedLinda implements Linda {
 
   @Override
   public Tuple take(Tuple template) {
-    double retryTime = 1; // seconds
 
     for (Tuple t : database) {
       if (t.matches(template)) {
@@ -66,7 +38,9 @@ public class CentralizedLinda implements Linda {
         return t;
       }
     }
+
     // block until a matching tuple is found
+    double retryTime = 1; // seconds
     while (true) {
       // wait retryTime seconds before retrying
       try {
@@ -88,7 +62,6 @@ public class CentralizedLinda implements Linda {
 
   @Override
   public Tuple read(Tuple template) {
-    double retryTime = 1; // seconds
 
     for (Tuple t : database) {
       if (t.matches(template)) {
@@ -97,6 +70,7 @@ public class CentralizedLinda implements Linda {
     }
 
     // block until a matching tuple is found
+    double retryTime = 1; // seconds
     while (true) {
       // wait retryTime seconds before retrying
       try {
