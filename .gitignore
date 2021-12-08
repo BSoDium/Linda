@@ -1,6 +1,7 @@
 desktop.ini
 .gradle
 build
+/app/bin/
 *.class
 *.synctex.gz
 /doc/report/_minted-main
