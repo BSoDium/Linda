@@ -1,4 +1,7 @@
 desktop.ini
+.gradle
+build
+*.class
 *.synctex.gz
 /doc/report/_minted-main
 /doc/report/*.log
