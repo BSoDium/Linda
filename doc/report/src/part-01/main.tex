@@ -26,7 +26,15 @@ Dans ce projet nous allons implémenter deux manières de partager et gérer ces
 \end{figure}
 
 \begin{dinglist}{111}
-    \item Version mémoire partagée (version locale) :
-    \item
-    \item Version client / monoserveur (version distante)
+    \item Version mémoire partagée (version locale) : Chaque client est un nouveau \textit{thread}.
+    \item Version client / monoserveur (version distante) : Un serveur tourne et communique via \textit{RMI} aux différents clients.
 \end{dinglist}
+
+
+\subsection{Gradle}
+
+Pour simplifier la gestion des dépendances et faciliter le développement nous avons choisi d'utiliser
+l'outil \textit{Gradle} \footnote{\href{https://gradle.org/}{gradle.org}}.
+Ainsi, pour compiler le programme, il suffit par exemple de taper dans un terminal à la racine du projet :
+
+\sFF{src/part-01/com.cmd}{Lancer l'application java via Gradle}{gradle-run}
