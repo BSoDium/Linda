@@ -5,13 +5,15 @@ import java.util.Collection;
 import linda.Callback;
 import linda.Linda;
 import linda.Tuple;
+import linda.server.infrastructure.Client;
 
 /**
  * Client part of a client/server implementation of Linda.
  * It implements the Linda interface and propagates everything to the server it
  * is connected to.
  */
-public class LindaClient implements Linda {
+public class LindaClient implements Linda, Client {
+    LindaServer server;
 
     /**
      * Initializes the Linda implementation.
@@ -21,7 +23,11 @@ public class LindaClient implements Linda {
      *                  "//localhost:4000/LindaServer".
      */
     public LindaClient(String serverURI) {
-        // TO BE COMPLETED
+        try {
+            this.server = (LindaServer) java.rmi.Naming.lookup(serverURI);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
