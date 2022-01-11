@@ -14,7 +14,7 @@ import java.util.StringTokenizer;
  * 
  * @author philippe.queinnec@enseeiht.fr
  */
-public class Tuple extends LinkedList<Serializable> implements Serializable {
+public class Tuple extends LinkedList<Serializable> {
 
     private static final long serialVersionUID = 1L;
 
