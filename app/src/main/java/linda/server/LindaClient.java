@@ -33,7 +33,7 @@ public class LindaClient extends Client implements Linda {
         try {
             this.server.write(t);
         } catch (RemoteException e) {
-            Logger.log(e.getStackTrace().toString(), LogLevel.Warn);
+            Logger.log(e.getMessage().toString(), LogLevel.Error);
         }
     }
 
@@ -42,7 +42,7 @@ public class LindaClient extends Client implements Linda {
         try {
             return this.server.take(template);
         } catch (RemoteException e) {
-            Logger.log(e.getStackTrace().toString(), LogLevel.Warn);
+            Logger.log(e.getMessage().toString(), LogLevel.Error);
         }
         return null;
     }
@@ -52,7 +52,7 @@ public class LindaClient extends Client implements Linda {
         try {
             return this.server.read(template);
         } catch (RemoteException e) {
-            Logger.log(e.getStackTrace().toString(), LogLevel.Warn);
+            Logger.log(e.getMessage().toString(), LogLevel.Error);
         }
         return null;
     }
@@ -62,7 +62,7 @@ public class LindaClient extends Client implements Linda {
         try {
             return this.server.tryTake(template);
         } catch (RemoteException e) {
-            Logger.log(e.getStackTrace().toString(), LogLevel.Warn);
+            Logger.log(e.getMessage().toString(), LogLevel.Error);
         }
         return null;
     }
@@ -72,7 +72,7 @@ public class LindaClient extends Client implements Linda {
         try {
             return this.server.tryRead(template);
         } catch (RemoteException e) {
-            Logger.log(e.getStackTrace().toString(), LogLevel.Warn);
+            Logger.log(e.getMessage().toString(), LogLevel.Error);
         }
         return null;
     }
@@ -82,7 +82,7 @@ public class LindaClient extends Client implements Linda {
         try {
             return this.server.takeAll(template);
         } catch (RemoteException e) {
-            Logger.log(e.getStackTrace().toString(), LogLevel.Warn);
+            Logger.log(e.getMessage().toString(), LogLevel.Error);
         }
         return null;
     }
@@ -92,7 +92,7 @@ public class LindaClient extends Client implements Linda {
         try {
             return this.server.readAll(template);
         } catch (RemoteException e) {
-            Logger.log(e.getStackTrace().toString(), LogLevel.Warn);
+            Logger.log(e.getMessage().toString(), LogLevel.Error);
         }
         return null;
     }
@@ -102,7 +102,7 @@ public class LindaClient extends Client implements Linda {
         try {
             this.server.eventRegister(mode, timing, template, callback);
         } catch (RemoteException e) {
-            Logger.log(e.getStackTrace().toString(), LogLevel.Warn);
+            Logger.log(e.getMessage().toString(), LogLevel.Error);
         }
     }
 
@@ -111,7 +111,7 @@ public class LindaClient extends Client implements Linda {
         try {
             System.out.printf(this.server.fetchDebug(prefix));
         } catch (RemoteException e) {
-            Logger.log(e.getStackTrace().toString(), LogLevel.Warn);
+            Logger.log(e.getMessage().toString(), LogLevel.Error);
         }
     }
 

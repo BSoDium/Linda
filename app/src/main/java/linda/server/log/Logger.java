@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+/**
+ * Logger class.
+ */
 public class Logger {
   public static class Message {
     public String message;

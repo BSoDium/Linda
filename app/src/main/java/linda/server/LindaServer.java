@@ -2,17 +2,24 @@ package linda.server;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.rmi.Remote;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.net.UnknownHostException;
 import java.util.Collection;
 
 import linda.Callback;
 import linda.Tuple;
 import linda.Linda.eventMode;
 import linda.Linda.eventTiming;
+import linda.server.infrastructure.LindaRemote;
+import linda.server.log.LogLevel;
+import linda.server.log.Logger;
 import linda.shm.CentralizedLinda;
 
-public class LindaServer implements Remote {
+public class LindaServer implements LindaRemote {
   CentralizedLinda linda;
 
   public LindaServer() {
@@ -57,5 +64,28 @@ public class LindaServer implements Remote {
     PrintStream ps = new PrintStream(baos);
     linda.debug(prefix, ps);
     return baos.toString();
+  }
+
+  public static void main(String[] args) {
+    try {
+      LocateRegistry.createRegistry(4000);
+
+      // setup security manager
+      Logger.log("Setting up security manager");
+      if (System.getSecurityManager() == null) {
+        System.setSecurityManager(new SecurityManager());
+      }
+      Logger.log("Done.");
+
+      // setup RMI
+      LindaServer server = new LindaServer();
+      String url = String.format("rmi://%s:4000/LindaServer", InetAddress.getLocalHost().getHostAddress());
+      Logger.log(String.format("Registering LindaServer at %s", url), LogLevel.Info);
+      Naming.rebind(url, server);
+      Logger.log("LindaServer ready", LogLevel.Info);
+    } catch (RemoteException | MalformedURLException | UnknownHostException e) {
+      Logger.log(e.getMessage(), LogLevel.Error);
+      e.printStackTrace();
+    }
   }
 }
