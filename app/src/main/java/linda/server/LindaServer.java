@@ -2,12 +2,7 @@ package linda.server;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.UnknownHostException;
-import java.rmi.Naming;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Collection;
 
@@ -16,8 +11,6 @@ import linda.Linda.eventMode;
 import linda.Linda.eventTiming;
 import linda.Tuple;
 import linda.server.infrastructure.LindaRemote;
-import linda.server.log.LogLevel;
-import linda.server.log.Logger;
 import linda.shm.CentralizedLinda;
 
 public class LindaServer extends UnicastRemoteObject implements LindaRemote {

@@ -1,5 +1,8 @@
 package linda.server.infrastructure;
 
+import linda.server.log.LogLevel;
+import linda.server.log.Logger;
+
 public abstract class Client {
   protected LindaRemote server;
 
@@ -14,7 +17,8 @@ public abstract class Client {
     try {
       this.server = (LindaRemote) java.rmi.Naming.lookup(serverURI);
     } catch (Exception e) {
-      e.printStackTrace();
+      Logger.log("Failed to lookup provided server URI", LogLevel.Fatal);
+      throw new RuntimeException("Client failed to lookup provided server URI");
     }
   }
 }
