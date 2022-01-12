@@ -1,6 +1,7 @@
 package linda.shm;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public class ArrayListSync<A> extends ArrayList<A> {
   private final Object lock = new Object();
@@ -24,6 +25,13 @@ public class ArrayListSync<A> extends ArrayList<A> {
   public boolean remove(Object o) {
     synchronized (lock) {
       return super.remove(o);
+    }
+  }
+
+  @Override
+  public void forEach(Consumer<? super A> action) {
+    synchronized (lock) {
+      super.forEach(action);
     }
   }
 

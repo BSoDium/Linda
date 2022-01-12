@@ -11,6 +11,7 @@ import linda.Linda;
 import linda.Tuple;
 import linda.Linda.eventMode;
 import linda.Linda.eventTiming;
+import linda.server.log.LogLevel;
 import linda.server.log.Logger;
 import linda.shm.CentralizedLinda;
 
@@ -20,13 +21,13 @@ import linda.shm.CentralizedLinda;
  */
 public class PrimeSearch {
 
-  private static class RenewingCallback implements Callback {
+  private static class EliminationCallback implements Callback {
     private Linda linda;
     private Tuple pattern;
     private boolean[] isPrime;
     private int k;
 
-    public RenewingCallback(Linda linda, Tuple pattern, boolean[] isPrime, int k) {
+    public EliminationCallback(Linda linda, Tuple pattern, boolean[] isPrime, int k) {
       this.linda = linda;
       this.pattern = pattern;
       this.isPrime = isPrime;
@@ -34,15 +35,11 @@ public class PrimeSearch {
     }
 
     public void call(Tuple t) {
-      Logger.log("CB got " + t);
-      linda.eventRegister(eventMode.READ, eventTiming.FUTURE, pattern, this);
-
       // remove all the multiples of the prime number
       int prime = (int) t.get(0);
       for (int i = prime * prime; i <= k; i += prime) {
         isPrime[i] = false;
       }
-      Logger.log("CB done with " + t);
     }
   }
 
@@ -88,11 +85,13 @@ public class PrimeSearch {
     // register the callback
     Tuple pattern = new Tuple(Integer.class);
     lindaPrimes.eventRegister(eventMode.READ, eventTiming.FUTURE, pattern,
-        new RenewingCallback(lindaPrimes, pattern, isPrime, k));
+        new EliminationCallback(lindaPrimes, pattern, isPrime, k));
 
     for (Integer i = 2; i <= k; i++) {
       if (isPrime[i]) {
         lindaPrimes.write(new Tuple(i));
+        lindaPrimes.eventRegister(eventMode.READ, eventTiming.FUTURE, pattern,
+            new EliminationCallback(lindaPrimes, pattern, isPrime, k));
       }
     }
     ;
@@ -104,16 +103,22 @@ public class PrimeSearch {
       System.out.println("Usage: java linda.prime.PrimeSearch <n>");
       System.exit(1);
     }
-    Logger.setShowPrefix(false);
+    // Logger.setShowPrefix(false);
+    Logger.setEmojiSupport(false);
 
     int k = Integer.parseInt(args[0]);
     Integer[] primes;
 
+    long start = System.currentTimeMillis();
     primes = PrimeSearch.sequentialSearch(k);
     Logger.log(new ArrayList<Integer>(Arrays.asList(primes)).toString());
+    long end = System.currentTimeMillis();
+    Logger.log("Sequential search took " + (end - start) + " ms.", LogLevel.Info);
 
+    start = System.currentTimeMillis();
     primes = PrimeSearch.parallelSearch(k);
     Logger.log(new ArrayList<Integer>(Arrays.asList(primes)).toString());
-
+    end = System.currentTimeMillis();
+    Logger.log("Parallel search took " + (end - start) + " ms.", LogLevel.Info);
   }
 }

@@ -16,7 +16,7 @@
       "request": "launch",
       "mainClass": "linda.prime.PrimeSearch",
       "projectName": "app",
-      "args": "100"
+      "args": "1000"
     },
     {
       "type": "java",
