@@ -1,12 +1,12 @@
 package linda.shm;
 
-
 import java.util.ArrayList;
 import java.util.Collection;
 
 import linda.Callback;
 import linda.Linda;
 import linda.Tuple;
+import linda.server.log.Logger;
 
 /** Shared memory implementation of Linda. */
 public class PrimitiveCentralizedLinda implements Linda {
@@ -161,17 +161,17 @@ public class PrimitiveCentralizedLinda implements Linda {
 
   @Override
   public void debug(String prefix) {
-    System.out.println(prefix + " Database:");
+    Logger.log(prefix + " Database:");
     for (Tuple t : database) {
-      System.out.println(prefix + "  | " + t);
+      Logger.log(prefix + "  | " + t);
     }
-    System.out.println(prefix + " Read callbacks:");
+    Logger.log(prefix + " Read callbacks:");
     for (Tuple t : readCallbacks.keySet()) {
-      System.out.println(prefix + "  | " + t + " -> " + readCallbacks.get(t));
+      Logger.log(prefix + "  | " + t + " -> " + readCallbacks.get(t));
     }
-    System.out.println(prefix + " Take callbacks:");
+    Logger.log(prefix + " Take callbacks:");
     for (Tuple t : takeCallbacks.keySet()) {
-      System.out.println(prefix + "  | " + t + " -> " + takeCallbacks.get(t));
+      Logger.log(prefix + "  | " + t + " -> " + takeCallbacks.get(t));
     }
   }
 
@@ -197,6 +197,5 @@ public class PrimitiveCentralizedLinda implements Linda {
       }
     });
   }
-
 
 }
