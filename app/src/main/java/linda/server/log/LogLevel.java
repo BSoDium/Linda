@@ -13,7 +13,7 @@ public enum LogLevel implements LogLevelInterface {
     }
 
     public String getColor() {
-      return Logger.ANSI_BLUE;
+      return Logger.ANSI_CYAN;
     }
   },
   Log {
@@ -22,7 +22,7 @@ public enum LogLevel implements LogLevelInterface {
     }
 
     public String getColor() {
-      return Logger.ANSI_WHITE;
+      return Logger.ANSI_BLUE;
     }
   },
   Warn {

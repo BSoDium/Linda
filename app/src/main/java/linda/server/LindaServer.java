@@ -71,21 +71,34 @@ public class LindaServer extends UnicastRemoteObject implements LindaRemote {
     try {
       LocateRegistry.createRegistry(4000);
 
-      // the following commented code throws an AccessControlException so fuck it
-
-      // // setup security manager
-      // Logger.log("Setting up security manager");
-      // if (System.getSecurityManager() == null) {
-      // System.setSecurityManager(new SecurityManager());
-      // }
-      // Logger.log("Done.");
-
       // setup RMI
       LindaServer server = new LindaServer();
       String url = String.format("rmi://%s:4000/LindaServer", InetAddress.getLocalHost().getHostAddress());
       Logger.log(String.format("Registering LindaServer at %s", url), LogLevel.Info);
       Naming.rebind(url, server);
       Logger.log("LindaServer ready", LogLevel.Info);
+
+      // test using client
+      LindaClient client = new LindaClient(url);
+
+      Tuple t1 = new Tuple(4, 5);
+      Logger.log("(2) write: " + t1);
+      client.write(t1);
+
+      Tuple t11 = new Tuple(4, 5);
+      Logger.log("(2) write: " + t11);
+      client.write(t11);
+
+      Tuple t2 = new Tuple("hello", 15);
+      Logger.log("(2) write: " + t2);
+      client.write(t2);
+
+      Tuple t3 = new Tuple(4, "foo");
+      Logger.log("(2) write: " + t3);
+      client.write(t3);
+
+      client.debug("(2)");
+
     } catch (RemoteException | MalformedURLException | UnknownHostException e) {
       Logger.log(e.getMessage(), LogLevel.Error);
       e.printStackTrace();

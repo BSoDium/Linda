@@ -37,7 +37,8 @@ public class Logger {
    * @param level   the level of the message.
    */
   public static void log(String message, LogLevel level) {
-    history.put(new Date(), new Message(message, level));
+    Date date = new Date();
+    history.put(date, new Message(message, level));
     System.out.printf("%s%s %s: %s\n", level.getColor(), level, ANSI_RESET, message);
   }
 

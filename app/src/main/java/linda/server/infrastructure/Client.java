@@ -1,9 +1,7 @@
 package linda.server.infrastructure;
 
-import linda.server.LindaServer;
-
 public abstract class Client {
-  protected LindaServer server;
+  protected LindaRemote server;
 
   /**
    * Initializes the client implementation.
@@ -14,7 +12,7 @@ public abstract class Client {
    */
   public Client(String serverURI) {
     try {
-      this.server = (LindaServer) java.rmi.Naming.lookup(serverURI);
+      this.server = (LindaRemote) java.rmi.Naming.lookup(serverURI);
     } catch (Exception e) {
       e.printStackTrace();
     }

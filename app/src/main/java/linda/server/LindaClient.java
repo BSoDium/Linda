@@ -34,6 +34,7 @@ public class LindaClient extends Client implements Linda {
             this.server.write(t);
         } catch (RemoteException e) {
             Logger.log(e.getMessage().toString(), LogLevel.Error);
+            throw new RuntimeException(e);
         }
     }
 
@@ -43,8 +44,8 @@ public class LindaClient extends Client implements Linda {
             return this.server.take(template);
         } catch (RemoteException e) {
             Logger.log(e.getMessage().toString(), LogLevel.Error);
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     @Override
@@ -53,8 +54,8 @@ public class LindaClient extends Client implements Linda {
             return this.server.read(template);
         } catch (RemoteException e) {
             Logger.log(e.getMessage().toString(), LogLevel.Error);
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     @Override
@@ -63,8 +64,8 @@ public class LindaClient extends Client implements Linda {
             return this.server.tryTake(template);
         } catch (RemoteException e) {
             Logger.log(e.getMessage().toString(), LogLevel.Error);
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     @Override
@@ -73,8 +74,8 @@ public class LindaClient extends Client implements Linda {
             return this.server.tryRead(template);
         } catch (RemoteException e) {
             Logger.log(e.getMessage().toString(), LogLevel.Error);
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     @Override
@@ -83,8 +84,8 @@ public class LindaClient extends Client implements Linda {
             return this.server.takeAll(template);
         } catch (RemoteException e) {
             Logger.log(e.getMessage().toString(), LogLevel.Error);
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     @Override
@@ -93,8 +94,8 @@ public class LindaClient extends Client implements Linda {
             return this.server.readAll(template);
         } catch (RemoteException e) {
             Logger.log(e.getMessage().toString(), LogLevel.Error);
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     @Override
@@ -103,6 +104,7 @@ public class LindaClient extends Client implements Linda {
             this.server.eventRegister(mode, timing, template, callback);
         } catch (RemoteException e) {
             Logger.log(e.getMessage().toString(), LogLevel.Error);
+            throw new RuntimeException(e);
         }
     }
 
@@ -112,6 +114,7 @@ public class LindaClient extends Client implements Linda {
             System.out.printf(this.server.fetchDebug(prefix));
         } catch (RemoteException e) {
             Logger.log(e.getMessage().toString(), LogLevel.Error);
+            throw new RuntimeException(e);
         }
     }
 
