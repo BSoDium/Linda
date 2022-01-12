@@ -195,7 +195,7 @@ public class CentralizedLinda implements Linda {
    */
   private void runCallBacks() {
     readCallbacks.forEachKey(key -> {
-      for (Tuple t : database.clone()) {
+      for (Tuple t : database.clone().reversed()) { // reversed to get the latest first
         if (t.matches(key)) {
           readCallbacks.get(key).call(t);
           readCallbacks.remove(key);
@@ -203,7 +203,7 @@ public class CentralizedLinda implements Linda {
       }
     });
     takeCallbacks.forEachKey(key -> {
-      for (Tuple t : database.clone()) {
+      for (Tuple t : database.clone().reversed()) {
         if (t.matches(key)) {
           database.remove(t);
           takeCallbacks.get(key).call(t);
@@ -212,5 +212,4 @@ public class CentralizedLinda implements Linda {
       }
     });
   }
-
 }

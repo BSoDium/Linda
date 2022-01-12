@@ -9,10 +9,10 @@ public class ArrayListSync<A> extends ArrayList<A> {
     super();
   }
 
-  public ArrayListSync (ArrayList<A> list) {
+  public ArrayListSync(ArrayList<A> list) {
     super(list);
   }
-  
+
   @Override
   public boolean add(A a) {
     synchronized (lock) {
@@ -26,9 +26,24 @@ public class ArrayListSync<A> extends ArrayList<A> {
       return super.remove(o);
     }
   }
-  
+
   @Override
   public ArrayListSync<A> clone() {
     return new ArrayListSync<A>(this);
+  }
+
+  /**
+   * Returns the same list, but reversed
+   * 
+   * @return
+   */
+  public ArrayListSync<A> reversed() {
+    ArrayListSync<A> list = new ArrayListSync<A>();
+    synchronized (lock) {
+      for (int i = size() - 1; i >= 0; i--) {
+        list.add(get(i));
+      }
+    }
+    return list;
   }
 }

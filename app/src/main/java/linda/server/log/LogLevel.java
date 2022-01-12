@@ -4,6 +4,10 @@ interface LogLevelInterface {
   String toString();
 
   String getColor();
+
+  int getPriority();
+
+  String getIcon();
 }
 
 public enum LogLevel implements LogLevelInterface {
@@ -15,6 +19,14 @@ public enum LogLevel implements LogLevelInterface {
     public String getColor() {
       return Logger.ANSI_CYAN;
     }
+
+    public int getPriority() {
+      return 0;
+    }
+
+    public String getIcon() {
+      return "💡";
+    }
   },
   Log {
     public String toString() {
@@ -23,6 +35,14 @@ public enum LogLevel implements LogLevelInterface {
 
     public String getColor() {
       return Logger.ANSI_BLUE;
+    }
+
+    public int getPriority() {
+      return 1;
+    }
+
+    public String getIcon() {
+      return "💬";
     }
   },
   Warn {
@@ -33,6 +53,14 @@ public enum LogLevel implements LogLevelInterface {
     public String getColor() {
       return Logger.ANSI_YELLOW;
     }
+
+    public int getPriority() {
+      return 2;
+    }
+
+    public String getIcon() {
+      return "⚠️";
+    }
   },
   Error {
     public String toString() {
@@ -42,6 +70,14 @@ public enum LogLevel implements LogLevelInterface {
     public String getColor() {
       return Logger.ANSI_RED;
     }
+
+    public int getPriority() {
+      return 3;
+    }
+
+    public String getIcon() {
+      return "❌";
+    }
   },
   Fatal {
     public String toString() {
@@ -50,6 +86,14 @@ public enum LogLevel implements LogLevelInterface {
 
     public String getColor() {
       return Logger.ANSI_RED;
+    }
+
+    public int getPriority() {
+      return 4;
+    }
+
+    public String getIcon() {
+      return "💀";
     }
   }
 }
