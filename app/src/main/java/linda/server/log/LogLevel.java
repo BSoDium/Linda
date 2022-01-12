@@ -11,23 +11,6 @@ interface LogLevelInterface {
 }
 
 public enum LogLevel implements LogLevelInterface {
-  Info {
-    public String toString() {
-      return "INFO";
-    }
-
-    public String getColor() {
-      return Logger.ANSI_CYAN;
-    }
-
-    public int getPriority() {
-      return 0;
-    }
-
-    public String getIcon() {
-      return "💡";
-    }
-  },
   Log {
     public String toString() {
       return "LOG";
@@ -38,13 +21,31 @@ public enum LogLevel implements LogLevelInterface {
     }
 
     public int getPriority() {
-      return 1;
+      return 0;
     }
 
     public String getIcon() {
       return "💬";
     }
   },
+  Info {
+    public String toString() {
+      return "INFO";
+    }
+
+    public String getColor() {
+      return Logger.ANSI_CYAN;
+    }
+
+    public int getPriority() {
+      return 1;
+    }
+
+    public String getIcon() {
+      return "💡";
+    }
+  },
+
   Warn {
     public String toString() {
       return "WARNING";

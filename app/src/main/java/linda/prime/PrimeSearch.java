@@ -37,6 +37,12 @@ public class PrimeSearch {
     public void call(Tuple t) {
       // remove all the multiples of the prime number
       int prime = (int) t.get(0);
+
+      if (isPrime[prime + 1] && prime + 1 <= k) {
+        linda.eventRegister(eventMode.READ, eventTiming.FUTURE, pattern, this);
+        linda.write(new Tuple(prime + 1));
+      }
+
       for (int i = prime * prime; i <= k; i += prime) {
         isPrime[i] = false;
       }
@@ -87,14 +93,16 @@ public class PrimeSearch {
     lindaPrimes.eventRegister(eventMode.READ, eventTiming.FUTURE, pattern,
         new EliminationCallback(lindaPrimes, pattern, isPrime, k));
 
-    for (Integer i = 2; i <= k; i++) {
-      if (isPrime[i]) {
-        lindaPrimes.write(new Tuple(i));
-        lindaPrimes.eventRegister(eventMode.READ, eventTiming.FUTURE, pattern,
-            new EliminationCallback(lindaPrimes, pattern, isPrime, k));
-      }
-    }
-    ;
+    lindaPrimes.write(new Tuple(2));
+
+    // for (Integer i = 2; i <= k; i++) {
+    // if (isPrime[i]) {
+    // lindaPrimes.write(new Tuple(i));
+    // lindaPrimes.eventRegister(eventMode.READ, eventTiming.FUTURE, pattern,
+    // new EliminationCallback(lindaPrimes, pattern, isPrime, k));
+    // }
+    // }
+
     return lindaPrimes.readAll(new Tuple(Integer.class)).stream().map(tuple -> tuple.get(0)).toArray(Integer[]::new);
   }
 

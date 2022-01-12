@@ -189,6 +189,7 @@ public class CentralizedLinda implements Linda {
     Callbacks.clone().forEach(e -> { // clone the list to avoid concurrent modification
       for (Tuple t : database.clone().reversed()) { // same here
         if (t.matches(e.getTriggerTemplate())) {
+          Callbacks.remove(e);
           e.getCallback().call(t);
           if (e.getMode() == eventMode.TAKE) {
             database.remove(t);
