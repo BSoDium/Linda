@@ -95,6 +95,15 @@ public class Logger {
   }
 
   /**
+   * Set the minimum priority of the messages to be printed.
+   * 
+   * @param minPriority
+   */
+  public static void setMinPriority(LogLevel minPriority) {
+    Logger.minPriority = minPriority.getPriority();
+  }
+
+  /**
    * Set whether the logger should show the prefix or not.
    * 
    * @param showPrefix

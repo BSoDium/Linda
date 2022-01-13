@@ -30,9 +30,11 @@ public class ArrayListSync<A> extends ArrayList<A> {
 
   @Override
   public void forEach(Consumer<? super A> action) {
-    synchronized (lock) {
-      super.forEach(action);
-    }
+    // this synchonized block isn't necessary, and also makes it harder to debug,
+    // but I'm keeping it for safety reasons
+    // synchronized (lock) {
+    super.forEach(action);
+    // }
   }
 
   @Override
