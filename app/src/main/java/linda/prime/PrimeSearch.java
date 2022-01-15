@@ -110,7 +110,7 @@ public class PrimeSearch {
       System.exit(1);
     }
     // Logger.setShowPrefix(false);
-    Logger.setEmojiSupport(false);
+    // Logger.setEmojiSupport(false);
     // Logger.setMinPriority(LogLevel.Log);
 
     Integer k = Integer.parseInt(args[0]);

@@ -56,4 +56,13 @@ public class ArrayListSync<A> extends ArrayList<A> {
     }
     return list;
   }
+
+  /**
+   * Retrieves the lock object.
+   * 
+   * @return the lock object
+   */
+  public Object getLock() {
+    return lock;
+  }
 }

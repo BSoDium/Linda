@@ -23,7 +23,8 @@
       "name": "Launch Main",
       "request": "launch",
       "mainClass": "linda.search.basic.Main",
-      "projectName": "app"
+      "projectName": "app",
+      "args": ["\"agneau\"", "./app/src/main/resources/dict/french"]
     },
     {
       "type": "java",

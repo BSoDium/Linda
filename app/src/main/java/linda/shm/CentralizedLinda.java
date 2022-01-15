@@ -36,11 +36,13 @@ public class CentralizedLinda implements Linda {
   @Override
   public Tuple take(Tuple template) {
     // try to find a tuple matching the template
-    for (Tuple t : database) {
-      if (t.matches(template)) {
-        database.remove(t);
-        runCallBacks();
-        return t;
+    synchronized (database.getLock()) {
+      for (Tuple t : database) {
+        if (t.matches(template)) {
+          database.remove(t);
+          runCallBacks();
+          return t;
+        }
       }
     }
 
@@ -55,11 +57,13 @@ public class CentralizedLinda implements Linda {
         e.printStackTrace();
       }
       // retry
-      for (Tuple t : database) {
-        if (t.matches(template)) {
-          database.remove(t);
-          runCallBacks();
-          return t;
+      synchronized (database.getLock()) {
+        for (Tuple t : database) {
+          if (t.matches(template)) {
+            database.remove(t);
+            runCallBacks();
+            return t;
+          }
         }
       }
     }
@@ -68,9 +72,11 @@ public class CentralizedLinda implements Linda {
   @Override
   public Tuple read(Tuple template) {
     // try to find a tuple matching the template
-    for (Tuple t : database) {
-      if (t.matches(template)) {
-        return t;
+    synchronized (database.getLock()) {
+      for (Tuple t : database) {
+        if (t.matches(template)) {
+          return t;
+        }
       }
     }
 
@@ -85,9 +91,11 @@ public class CentralizedLinda implements Linda {
         e.printStackTrace();
       }
       // retry
-      for (Tuple t : database) {
-        if (t.matches(template)) {
-          return t;
+      synchronized (database.getLock()) {
+        for (Tuple t : database) {
+          if (t.matches(template)) {
+            return t;
+          }
         }
       }
     }
@@ -95,11 +103,13 @@ public class CentralizedLinda implements Linda {
 
   @Override
   public Tuple tryTake(Tuple template) {
-    for (Tuple t : database) {
-      if (t.matches(template)) {
-        database.remove(t);
-        runCallBacks();
-        return t;
+    synchronized (database.getLock()) {
+      for (Tuple t : database) {
+        if (t.matches(template)) {
+          database.remove(t);
+          runCallBacks();
+          return t;
+        }
       }
     }
     return null;
@@ -107,9 +117,11 @@ public class CentralizedLinda implements Linda {
 
   @Override
   public Tuple tryRead(Tuple template) {
-    for (Tuple t : database) {
-      if (t.matches(template)) {
-        return t;
+    synchronized (database.getLock()) {
+      for (Tuple t : database) {
+        if (t.matches(template)) {
+          return t;
+        }
       }
     }
     return null;
@@ -118,10 +130,12 @@ public class CentralizedLinda implements Linda {
   @Override
   public Collection<Tuple> takeAll(Tuple template) {
     ArrayList<Tuple> ret = new ArrayList<Tuple>();
-    for (Tuple t : database) {
-      if (t.matches(template)) {
-        ret.add(t);
-        database.remove(t);
+    synchronized (database.getLock()) {
+      for (Tuple t : database) {
+        if (t.matches(template)) {
+          ret.add(t);
+          database.remove(t);
+        }
       }
     }
     runCallBacks();
@@ -131,9 +145,11 @@ public class CentralizedLinda implements Linda {
   @Override
   public Collection<Tuple> readAll(Tuple template) {
     ArrayList<Tuple> ret = new ArrayList<Tuple>();
-    for (Tuple t : database) {
-      if (t.matches(template)) {
-        ret.add(t);
+    synchronized (database.getLock()) {
+      for (Tuple t : database) {
+        if (t.matches(template)) {
+          ret.add(t);
+        }
       }
     }
     return ret;
@@ -185,7 +201,7 @@ public class CentralizedLinda implements Linda {
    * Run all active callbacks.
    */
   private void runCallBacks() {
-    callbacks.clone().forEach(e -> {
+    callbacks.clone().forEach(e -> { // clone the list to avoid concurrent modification
       for (Tuple t : database.clone().reversed()) { // same here
         if (t.matches(e.getTriggerTemplate())) {
           callbacks.remove(e);
