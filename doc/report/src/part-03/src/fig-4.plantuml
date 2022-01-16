@@ -1,0 +1,19 @@
+@startuml fig-4
+interface Linda 
+class LindaClient {
+ LindaClient(String serverURI)
+ void write(Tuple t)
+ Tuple take(Tuple template)
+ Tuple read(Tuple template)
+  Tuple tryTake(Tuple template)
+ Tuple tryRead(Tuple template)
+ Collection<Tuple> takeAll(Tuple template)
+ Collection<Tuple> readAll(Tuple template)
+void eventRegister(eventMode mode, eventTiming timing, Tuple template, Callback callback)
+void debug(String prefix)
+
+}
+class Client
+Linda<|-- LindaClient
+Client <|.. LindaClient
+@enduml

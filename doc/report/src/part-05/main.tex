@@ -1,0 +1,12 @@
+\subsection{Problèmes rencontrés}
+
+Voici une liste succincte des problèmes rencontrés lors du développement du projet :
+
+\begin{itemize}
+    \item \iCode{eventRegister} : difficile de le faire tourner côté client et non pas serveur. Solutions envisagées :
+          \begin{itemize}
+              \item ajouter une référence du client sur le serveur
+              \item le client exécute un nouveau thread bloquant avec \iCode{callback}
+          \end{itemize}
+    \item \iCode{lock} plus on utilise de \iCode{lock}s, plus il y a de \textit{deadlock}s dans le programme.
+\end{itemize}

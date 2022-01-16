@@ -1,12 +1,18 @@
-\subsection{Problèmes rencontrés}
+Pour implanter la version client / monoserveur, nous construisons l'architecture des \iCode{LindaClient}
+et \iCode{LindaServer} ci-dessous. La classe \iCode{linda.server.LindaClient} doit être une implantation de
+l'interface Linda.
 
-Voici une liste succincte des problèmes rencontrés lors du développement du projet :
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.7]{src/part-03/src/fig-4.png}
+    \caption{Linda Client} \label{fig:linda-client}
+\end{figure}
 
-\begin{itemize}
-    \item \iCode{eventRegister} : difficile de le faire tourner côté client et non pas serveur. Solutions envisagées :
-          \begin{itemize}
-              \item ajouter une référence du client sur le serveur
-              \item le client exécute un nouveau thread bloquant avec \iCode{callback}
-          \end{itemize}
-    \item \iCode{lock} plus on utilise de \iCode{lock}s, plus il y a de \textit{deadlock}s dans le programme.
-\end{itemize}
+\iCode{LindaServer} doit être une implantation de l'interface \iCode{LindaRemote} et extension de
+\iCode{UnicastRemoteObject}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.7]{src/part-03/src/fig-5.png}
+    \caption{Linda Server} \label{fig:linda-server}
+\end{figure}

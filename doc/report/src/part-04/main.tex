@@ -1,0 +1,12 @@
+Pour calculer des nombres premiers inférieurs à \(k\), on fait une version séquentielle basée sur la
+technique du crible d'Eratosthène, puis envisager et réaliser différentes formes de parallélisation de
+cet algorithme. (\iCode{PrimeSearch.java})
+Une comparaison deux différentes versions :
+\begin{itemize}
+    \item
+          \iCode{SequentialSearch}: L'exécution séquentielle est monothread, l'efficacité de l'exécution du code est
+          très faible.
+    \item
+          \iCode{ParallelSearch}: Plusieurs threads exécutés en parallèle ensemble, l'efficacité est relativement
+          élevée.
+\end{itemize}

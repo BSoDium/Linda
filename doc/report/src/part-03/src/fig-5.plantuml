@@ -1,0 +1,21 @@
+@startuml fig-5
+interface LindaRemote 
+class LindaServer {
+ CentralizedLinda linda
+ void write(Tuple t)
+ Tuple take(Tuple template)
+ Tuple read(Tuple template)
+ Tuple tryTake(Tuple template)
+ Tuple tryRead(Tuple template)
+ Collection<Tuple> takeAll(Tuple template)
+ Collection<Tuple> readAll(Tuple template)
+void eventRegister(eventMode mode, eventTiming timing, Tuple template, Callback callback)
+Tuple eventWait(eventMode mode, eventTiming timing, Tuple template)
+String fetchDebug(String prefix)
+}
+
+LindaRemote<|-- LindaServer
+UnicastRemoteObject <|.. LindaServer
+Remote<|-- LindaRemote
+interface Remote
+@enduml
