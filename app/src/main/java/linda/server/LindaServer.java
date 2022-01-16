@@ -2,12 +2,7 @@ package linda.server;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.UnknownHostException;
-import java.rmi.Naming;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Collection;
 
@@ -16,8 +11,6 @@ import linda.Linda.eventMode;
 import linda.Linda.eventTiming;
 import linda.Tuple;
 import linda.server.infrastructure.LindaRemote;
-import linda.server.log.LogLevel;
-import linda.server.log.Logger;
 import linda.shm.CentralizedLinda;
 
 public class LindaServer extends UnicastRemoteObject implements LindaRemote {
@@ -58,6 +51,40 @@ public class LindaServer extends UnicastRemoteObject implements LindaRemote {
   public void eventRegister(eventMode mode, eventTiming timing, Tuple template, Callback callback)
       throws RemoteException {
     linda.eventRegister(mode, timing, template, callback);
+  }
+
+  public Tuple eventWait(eventMode mode, eventTiming timing, Tuple template) throws RemoteException {
+    Object lock = new Object();
+    // if the event is immediate, we can return immediately
+    if (timing == eventTiming.IMMEDIATE) {
+      if (mode == eventMode.READ) {
+        return linda.read(template);
+      } else {
+        return linda.take(template);
+      }
+    }
+
+    // otherwise, we need to wait for the event
+    linda.eventRegister(mode, timing, template, new linda.Callback() {
+      public void call(Tuple t) {
+        lock.notify();
+      }
+    });
+
+    synchronized (lock) {
+      try {
+        lock.wait();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+
+    // once the lock is notified, we can return the tuple
+    if (mode == eventMode.READ) {
+      return linda.read(template);
+    } else {
+      return linda.take(template);
+    }
   }
 
   public String fetchDebug(String prefix) throws RemoteException {

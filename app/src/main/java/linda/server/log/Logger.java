@@ -18,6 +18,10 @@ public class Logger {
     }
   }
 
+  private static int minPriority = 0;
+  private static boolean showPrefix = true;
+  private static boolean emojiSupport = true;
+
   private static HashMap<Date, Message> history = new HashMap<Date, Message>();
 
   public static final String ANSI_RESET = "\u001B[0m";
@@ -39,7 +43,11 @@ public class Logger {
   public static void log(String message, LogLevel level) {
     Date date = new Date();
     history.put(date, new Message(message, level));
-    System.out.printf("%s%s %s: %s\n", level.getColor(), level, ANSI_RESET, message);
+    if (level.getPriority() >= minPriority) {
+      String prefix = String.format("%s%s%s %s: ", emojiSupport ? level.getIcon() + " " : "", level.getColor(), level,
+          ANSI_RESET);
+      System.out.printf("%s%s\n", showPrefix ? prefix : "", message);
+    }
   }
 
   /**
@@ -75,5 +83,41 @@ public class Logger {
       }
     }
     return result;
+  }
+
+  /**
+   * Set the minimum priority of the messages to be printed.
+   * 
+   * @param minPriority
+   */
+  public static void setMinPriority(int minPriority) {
+    Logger.minPriority = minPriority;
+  }
+
+  /**
+   * Set the minimum priority of the messages to be printed.
+   * 
+   * @param minPriority
+   */
+  public static void setMinPriority(LogLevel minPriority) {
+    Logger.minPriority = minPriority.getPriority();
+  }
+
+  /**
+   * Set whether the logger should show the prefix or not.
+   * 
+   * @param showPrefix
+   */
+  public static void setShowPrefix(boolean showPrefix) {
+    Logger.showPrefix = showPrefix;
+  }
+
+  /**
+   * Set whether the logger should use emoji or not.
+   * 
+   * @param emojiSupport
+   */
+  public static void setEmojiSupport(boolean emojiSupport) {
+    Logger.emojiSupport = emojiSupport;
   }
 }

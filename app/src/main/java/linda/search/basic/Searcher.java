@@ -5,22 +5,36 @@ import java.util.UUID;
 
 import linda.Linda;
 import linda.Tuple;
+import linda.server.log.LogLevel;
+import linda.server.log.Logger;
+import linda.shm.ArrayListSync;
 
 public class Searcher implements Runnable {
 
+    private static Tuple activeRequest;
+    private static ArrayListSync<Searcher> workforce;
+    private UUID id;
     private Linda linda;
 
     public Searcher(Linda linda) {
         this.linda = linda;
+        this.id = UUID.randomUUID();
     }
 
     public void run() {
-        System.out.println("Ready to do a search");
-        Tuple treq = linda.read(new Tuple(Code.Request, UUID.class, String.class));
-        UUID reqUUID = (UUID) treq.get(1);
-        String req = (String) treq.get(2);
+        Logger.log("Searcher " + id + " ready to comply.");
+
+        if (activeRequest == null) {
+            activeRequest = linda.take(new Tuple(Code.Request, UUID.class, String.class));
+            Logger.log("New search request received from " + activeRequest.get(1), LogLevel.Debug);
+        } else {
+            Logger.log("Joining existing search request" + activeRequest.get(1), LogLevel.Debug);
+        }
+
+        UUID reqUUID = (UUID) activeRequest.get(1);
+        String req = (String) activeRequest.get(2);
         Tuple tv;
-        System.out.println("Looking for: " + req);
+        Logger.log("Looking for: " + req, LogLevel.Debug);
         while ((tv = linda.tryTake(new Tuple(Code.Value, String.class))) != null) {
             String val = (String) tv.get(1);
             int dist = getLevenshteinDistance(req, val);

@@ -12,14 +12,15 @@ import linda.server.log.Logger;
 /** Shared memory implementation of Linda. */
 public class CentralizedLinda implements Linda {
   private ArrayListSync<Tuple> database;
-  private HashMapSync<Tuple, Callback> readCallbacks;
-  private HashMapSync<Tuple, Callback> takeCallbacks;
+  private ArrayListSync<Event> callbacks;
   private final Object lock = new Object();
 
+  /**
+   * Creates a new shared memory implementation of Linda.
+   */
   public CentralizedLinda() {
-    database = new ArrayListSync<Tuple>();
-    readCallbacks = new HashMapSync<Tuple, Callback>();
-    takeCallbacks = new HashMapSync<Tuple, Callback>();
+    database = new ArrayListSync<>();
+    callbacks = new ArrayListSync<>();
   }
 
   @Override
@@ -34,26 +35,8 @@ public class CentralizedLinda implements Linda {
 
   @Override
   public Tuple take(Tuple template) {
-
-    for (Tuple t : database) {
-      if (t.matches(template)) {
-        database.remove(t);
-        runCallBacks();
-        return t;
-      }
-    }
-
-    // block until a matching tuple is found (multithreaded version)
-    while (true) {
-      try {
-        // wait for a matching tuple to be added to the database
-        synchronized (lock) {
-          lock.wait();
-        }
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-      // retry
+    // try to find a tuple matching the template
+    synchronized (database.getLock()) {
       for (Tuple t : database) {
         if (t.matches(template)) {
           database.remove(t);
@@ -62,16 +45,6 @@ public class CentralizedLinda implements Linda {
         }
       }
     }
-  }
-
-  @Override
-  public Tuple read(Tuple template) {
-
-    for (Tuple t : database) {
-      if (t.matches(template)) {
-        return t;
-      }
-    }
 
     // block until a matching tuple is found (multithreaded version)
     while (true) {
@@ -84,9 +57,45 @@ public class CentralizedLinda implements Linda {
         e.printStackTrace();
       }
       // retry
+      synchronized (database.getLock()) {
+        for (Tuple t : database) {
+          if (t.matches(template)) {
+            database.remove(t);
+            runCallBacks();
+            return t;
+          }
+        }
+      }
+    }
+  }
+
+  @Override
+  public Tuple read(Tuple template) {
+    // try to find a tuple matching the template
+    synchronized (database.getLock()) {
       for (Tuple t : database) {
         if (t.matches(template)) {
           return t;
+        }
+      }
+    }
+
+    // block until a matching tuple is found
+    while (true) {
+      try {
+        // wait for a matching tuple to be added to the database
+        synchronized (lock) {
+          lock.wait();
+        }
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      // retry
+      synchronized (database.getLock()) {
+        for (Tuple t : database) {
+          if (t.matches(template)) {
+            return t;
+          }
         }
       }
     }
@@ -94,11 +103,13 @@ public class CentralizedLinda implements Linda {
 
   @Override
   public Tuple tryTake(Tuple template) {
-    for (Tuple t : database) {
-      if (t.matches(template)) {
-        database.remove(t);
-        runCallBacks();
-        return t;
+    synchronized (database.getLock()) {
+      for (Tuple t : database) {
+        if (t.matches(template)) {
+          database.remove(t);
+          runCallBacks();
+          return t;
+        }
       }
     }
     return null;
@@ -106,9 +117,11 @@ public class CentralizedLinda implements Linda {
 
   @Override
   public Tuple tryRead(Tuple template) {
-    for (Tuple t : database) {
-      if (t.matches(template)) {
-        return t;
+    synchronized (database.getLock()) {
+      for (Tuple t : database) {
+        if (t.matches(template)) {
+          return t;
+        }
       }
     }
     return null;
@@ -117,10 +130,12 @@ public class CentralizedLinda implements Linda {
   @Override
   public Collection<Tuple> takeAll(Tuple template) {
     ArrayList<Tuple> ret = new ArrayList<Tuple>();
-    for (Tuple t : database) {
-      if (t.matches(template)) {
-        ret.add(t);
-        database.remove(t);
+    synchronized (database.getLock()) {
+      for (Tuple t : database) {
+        if (t.matches(template)) {
+          ret.add(t);
+          database.remove(t);
+        }
       }
     }
     runCallBacks();
@@ -130,9 +145,11 @@ public class CentralizedLinda implements Linda {
   @Override
   public Collection<Tuple> readAll(Tuple template) {
     ArrayList<Tuple> ret = new ArrayList<Tuple>();
-    for (Tuple t : database) {
-      if (t.matches(template)) {
-        ret.add(t);
+    synchronized (database.getLock()) {
+      for (Tuple t : database) {
+        if (t.matches(template)) {
+          ret.add(t);
+        }
       }
     }
     return ret;
@@ -141,23 +158,16 @@ public class CentralizedLinda implements Linda {
   @Override
   public void eventRegister(eventMode mode, eventTiming timing, Tuple template, Callback callback) {
     // store the callback
-    if (mode == eventMode.READ) {
-      readCallbacks.put(template, callback);
-    } else if (mode == eventMode.TAKE) {
-      takeCallbacks.put(template, callback);
-    } else {
-      throw new IllegalArgumentException("Invalid event mode");
-    }
+    Event e = new Event(template, callback, mode);
+    callbacks.add(e);
 
-    // if the event is immediate, call the callback, then remove it
+    // if the event is immediate, remove the callback, then run it
     if (timing == eventTiming.IMMEDIATE) {
-      for (Tuple t : database) {
+      for (Tuple t : database.clone()) {
         if (t.matches(template)) {
+          callbacks.remove(e);
           if (mode == eventMode.TAKE) {
-            takeCallbacks.remove(template);
             database.remove(t);
-          } else if (mode == eventMode.READ) {
-            readCallbacks.remove(template);
           }
           callback.call(t);
         }
@@ -173,17 +183,14 @@ public class CentralizedLinda implements Linda {
   public void debug(String prefix, PrintStream ps) {
     PrintStream old = System.out;
     System.setOut(ps);
+
     Logger.log(prefix + " Database:");
     for (Tuple t : database) {
       Logger.log(prefix + "  | " + t);
     }
-    Logger.log(prefix + " Read callbacks:");
-    for (Tuple t : readCallbacks.keySet()) {
-      Logger.log(prefix + "  | " + t + " -> " + readCallbacks.get(t));
-    }
-    Logger.log(prefix + " Take callbacks:");
-    for (Tuple t : takeCallbacks.keySet()) {
-      Logger.log(prefix + "  | " + t + " -> " + takeCallbacks.get(t));
+    Logger.log(prefix + " Callbacks:");
+    for (Event e : callbacks) {
+      Logger.log(String.format("%s  | %s : %s -> %s", prefix, e.getMode(), e.getTriggerTemplate(), e.getCallback()));
     }
 
     System.out.flush();
@@ -194,23 +201,19 @@ public class CentralizedLinda implements Linda {
    * Run all active callbacks.
    */
   private void runCallBacks() {
-    readCallbacks.forEachKey(key -> {
-      for (Tuple t : database.clone()) {
-        if (t.matches(key)) {
-          readCallbacks.get(key).call(t);
-          readCallbacks.remove(key);
-        }
-      }
-    });
-    takeCallbacks.forEachKey(key -> {
-      for (Tuple t : database.clone()) {
-        if (t.matches(key)) {
-          database.remove(t);
-          takeCallbacks.get(key).call(t);
-          takeCallbacks.remove(key);
+    callbacks.clone().forEach(e -> { // clone the list to avoid concurrent modification
+      synchronized (database.getLock()) {
+        for (Tuple t : database.reversed()) {
+          if (t.matches(e.getTriggerTemplate())) {
+            callbacks.remove(e);
+            e.getCallback().call(t);
+            if (e.getMode() == eventMode.TAKE) {
+              database.remove(t);
+            }
+            break;
+          }
         }
       }
     });
   }
-
 }
