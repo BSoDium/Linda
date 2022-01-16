@@ -1,7 +1,4 @@
 \documentclass{sebaClass}
-\usepackage{float}
-\usepackage{bm}
-\usepackage{siunitx}
 
 \title{Projet}
 \author{Ying, Philippe et Sébastien}
@@ -11,14 +8,7 @@
 \newcommand{\Subject}{Linda}
 \newcommand{\Place}{ENSEEIHT}
 
-\renewcommand{\Language}{text}
-\newcommand{\cFF}[3]{\codeFromFile{text}{#1}{#2}{#3}}
-\newcommand{\cFFS}[1]{\codeFromFileSimple{text}{#1}}
-\newcommand{\cFFSC}[1]{\codeFromFileSimpleContinuousLine{text}{#1}}
 \newcommand{\sFF}[3]{\shellFromFile{#1}{#2}{#3}}
-\newcommand{\q}[1]{\textit{\textbf{#1}}\\}
-\newcommand{\ql}[1]{\textit{\textbf{#1}}}
-\newcommand{\rt}[1]{\textcolor{redl}{#1}}
 
 \begin{document}
 
@@ -35,5 +25,8 @@
 
 \section{Version \textit{mémoire partagée}}
 \input{src/part-02/main.tex}
+
+\section{Conclusion}
+\input{src/part-03/main.tex}
 
 \end{document}
