@@ -12,7 +12,6 @@ import linda.shm.ArrayListSync;
 public class Searcher implements Runnable {
 
     private static Tuple activeRequest;
-    private static ArrayListSync<Searcher> workforce;
     private UUID id;
     private Linda linda;
 
@@ -25,7 +24,7 @@ public class Searcher implements Runnable {
         Logger.log("Searcher " + id + " ready to comply.");
 
         if (activeRequest == null) {
-            activeRequest = linda.take(new Tuple(Code.Request, UUID.class, String.class));
+            activeRequest = linda.read(new Tuple(Code.Request, UUID.class, String.class));
             Logger.log("New search request received from " + activeRequest.get(1), LogLevel.Debug);
         } else {
             Logger.log("Joining existing search request" + activeRequest.get(1), LogLevel.Debug);
@@ -39,10 +38,12 @@ public class Searcher implements Runnable {
             String val = (String) tv.get(1);
             int dist = getLevenshteinDistance(req, val);
             if (dist < 10) { // arbitrary
+                Logger.log("Sent: " + val, LogLevel.Debug);
                 linda.write(new Tuple(Code.Result, reqUUID, val, dist));
             }
         }
         linda.write(new Tuple(Code.Searcher, "done", reqUUID));
+        Logger.log("Search " + reqUUID + " done.", LogLevel.Debug);
     }
 
     /*****************************************************************/

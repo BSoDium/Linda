@@ -3,6 +3,7 @@ package linda.server.infrastructure;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.concurrent.Semaphore;
 
 import linda.Callback;
 import linda.Linda.eventMode;
@@ -10,6 +11,15 @@ import linda.Linda.eventTiming;
 import linda.Tuple;
 
 public interface LindaRemote extends Remote {
+
+  /**
+   * Retrieve the URL at which the Linda server is available.
+   * 
+   * @return the URL at which the Linda server is available.
+   * @throws RemoteException
+   */
+  public String getURL() throws RemoteException;
+
   /**
    * Write a tuple to the server.
    * 
@@ -95,7 +105,8 @@ public interface LindaRemote extends Remote {
    * @return the tuple read
    * @throws RemoteException
    */
-  public Tuple eventWait(eventMode mode, eventTiming timing, Tuple template) throws RemoteException;
+  public Tuple eventWait(eventMode mode, eventTiming timing, Tuple template, Semaphore runEndSem)
+      throws RemoteException;
 
   /**
    * Retrieve a debug string containing the current state of the server.
