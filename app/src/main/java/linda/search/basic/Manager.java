@@ -7,6 +7,8 @@ import java.util.stream.Stream;
 
 import linda.Linda;
 import linda.Tuple;
+import linda.server.log.LogLevel;
+import linda.server.log.Logger;
 
 public class Manager implements Runnable {
 
@@ -27,7 +29,7 @@ public class Manager implements Runnable {
     private void addSearch(String search) {
         this.search = search;
         this.reqUUID = UUID.randomUUID();
-        System.out.println("Search " + this.reqUUID + " for " + this.search);
+        Logger.log("Initiated search " + this.reqUUID + " for \'" + this.search + "\'");
         linda.eventRegister(Linda.eventMode.TAKE, Linda.eventTiming.IMMEDIATE,
                 new Tuple(Code.Result, this.reqUUID, String.class, Integer.class), new CbGetResult());
         linda.write(new Tuple(Code.Request, this.reqUUID, this.search));
@@ -44,7 +46,7 @@ public class Manager implements Runnable {
     private void waitForEndSearch() {
         linda.take(new Tuple(Code.Searcher, "done", this.reqUUID));
         linda.take(new Tuple(Code.Request, this.reqUUID, String.class)); // remove query
-        System.out.println("query done");
+        Logger.log("query done");
     }
 
     private class CbGetResult implements linda.Callback {
@@ -54,7 +56,7 @@ public class Manager implements Runnable {
             if (v < bestvalue) {
                 bestvalue = v;
                 bestresult = s;
-                System.out.println("New best (" + bestvalue + "): \"" + bestresult + "\"");
+                Logger.log("New best (" + bestvalue + "): \"" + bestresult + "\"", LogLevel.Info);
             }
             linda.eventRegister(Linda.eventMode.TAKE, Linda.eventTiming.IMMEDIATE,
                     new Tuple(Code.Result, reqUUID, String.class, Integer.class), this);

@@ -202,14 +202,16 @@ public class CentralizedLinda implements Linda {
    */
   private void runCallBacks() {
     callbacks.clone().forEach(e -> { // clone the list to avoid concurrent modification
-      for (Tuple t : database.clone().reversed()) { // same here
-        if (t.matches(e.getTriggerTemplate())) {
-          callbacks.remove(e);
-          e.getCallback().call(t);
-          if (e.getMode() == eventMode.TAKE) {
-            database.remove(t);
+      synchronized (database.getLock()) {
+        for (Tuple t : database.reversed()) {
+          if (t.matches(e.getTriggerTemplate())) {
+            callbacks.remove(e);
+            e.getCallback().call(t);
+            if (e.getMode() == eventMode.TAKE) {
+              database.remove(t);
+            }
+            break;
           }
-          break;
         }
       }
     });

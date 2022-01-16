@@ -58,7 +58,9 @@ public class ArrayListSync<A> extends ArrayList<A> {
   }
 
   /**
-   * Retrieves the lock object.
+   * Retrieves the method-synchronizing lock object; this method can be used to
+   * synchronize big chunks of code that are not implemented in the aforementioned
+   * API.
    * 
    * @return the lock object
    */

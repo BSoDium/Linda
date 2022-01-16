@@ -29,7 +29,7 @@ public enum LogLevel implements LogLevelInterface {
 
     @Override
     public String getIcon() {
-      return "🪲";
+      return "🐛";
     }
   },
   Log {

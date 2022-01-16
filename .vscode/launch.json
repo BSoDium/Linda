@@ -20,9 +20,9 @@
     },
     {
       "type": "java",
-      "name": "Launch Main",
+      "name": "Launch TextSearch",
       "request": "launch",
-      "mainClass": "linda.search.basic.Main",
+      "mainClass": "linda.search.basic.TextSearch",
       "projectName": "app",
       "args": ["\"agneau\"", "./app/src/main/resources/dict/french"]
     },
