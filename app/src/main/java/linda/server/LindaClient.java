@@ -100,12 +100,20 @@ public class LindaClient extends Client implements Linda {
 
     @Override
     public void eventRegister(eventMode mode, eventTiming timing, Tuple template, Callback callback) {
-        try {
-            this.server.eventRegister(mode, timing, template, callback);
-        } catch (RemoteException e) {
-            Logger.log(e.getMessage().toString(), LogLevel.Error);
-            throw new RuntimeException(e);
-        }
+        new Thread() {
+            public void run() {
+                try {
+                    // wait for the event to happen
+                    Tuple t = server.eventWait(mode, timing, template);
+                    // call the callback
+                    callback.call(t);
+                } catch (RemoteException e) {
+                    Logger.log(e.getMessage().toString(), LogLevel.Error);
+                    throw new RuntimeException(e);
+                }
+            }
+        }.start();
+
     }
 
     @Override

@@ -53,6 +53,40 @@ public class LindaServer extends UnicastRemoteObject implements LindaRemote {
     linda.eventRegister(mode, timing, template, callback);
   }
 
+  public Tuple eventWait(eventMode mode, eventTiming timing, Tuple template) throws RemoteException {
+    Object lock = new Object();
+    // if the event is immediate, we can return immediately
+    if (timing == eventTiming.IMMEDIATE) {
+      if (mode == eventMode.READ) {
+        return linda.read(template);
+      } else {
+        return linda.take(template);
+      }
+    }
+
+    // otherwise, we need to wait for the event
+    linda.eventRegister(mode, timing, template, new linda.Callback() {
+      public void call(Tuple t) {
+        lock.notify();
+      }
+    });
+
+    synchronized (lock) {
+      try {
+        lock.wait();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+
+    // once the lock is notified, we can return the tuple
+    if (mode == eventMode.READ) {
+      return linda.read(template);
+    } else {
+      return linda.take(template);
+    }
+  }
+
   public String fetchDebug(String prefix) throws RemoteException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     PrintStream ps = new PrintStream(baos);
