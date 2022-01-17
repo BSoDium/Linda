@@ -49,5 +49,4 @@ public class SyncCallbackTest extends RemoteTest {
 
         linda.debug("(2)");
     }
-
 }

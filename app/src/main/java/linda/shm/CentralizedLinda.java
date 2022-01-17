@@ -4,6 +4,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import linda.AsynchronousCallback;
 import linda.Callback;
 import linda.Linda;
 import linda.Tuple;
@@ -26,6 +27,7 @@ public class CentralizedLinda implements Linda {
   @Override
   public void write(Tuple t) {
     database.add(t);
+    // run callbacks
     runCallBacks();
     // wake up all waiting threads after a write
     synchronized (lock) {
@@ -163,8 +165,8 @@ public class CentralizedLinda implements Linda {
 
     // if the event is immediate, remove the callback, then run it
     if (timing == eventTiming.IMMEDIATE) {
-      for (Tuple t : database.clone()) {
-        if (t.matches(template)) {
+      for (Tuple t : database.clone().reversed()) { // clone instead of synchronized to avoid deadlock
+        if (t != null && t.matches(template)) {
           callbacks.remove(e);
           if (mode == eventMode.TAKE) {
             database.remove(t);
@@ -202,16 +204,14 @@ public class CentralizedLinda implements Linda {
    */
   private void runCallBacks() {
     callbacks.clone().forEach(e -> { // clone the list to avoid concurrent modification
-      synchronized (database.getLock()) {
-        for (Tuple t : database.reversed()) {
-          if (t.matches(e.getTriggerTemplate())) {
-            callbacks.remove(e);
-            e.getCallback().call(t);
-            if (e.getMode() == eventMode.TAKE) {
-              database.remove(t);
-            }
-            break;
+      for (Tuple t : database.clone().reversed()) { // clone instead of synchronized to avoid deadlock
+        if (t.matches(e.getTriggerTemplate())) {
+          callbacks.remove(e);
+          e.getCallback().call(t);
+          if (e.getMode() == eventMode.TAKE) {
+            database.remove(t);
           }
+          break;
         }
       }
     });

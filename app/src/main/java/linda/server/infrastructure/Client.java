@@ -1,9 +1,11 @@
 package linda.server.infrastructure;
 
+import java.io.Serializable;
+
 import linda.server.log.LogLevel;
 import linda.server.log.Logger;
 
-public abstract class Client {
+public abstract class Client implements Serializable {
   protected LindaRemote server;
 
   /**
