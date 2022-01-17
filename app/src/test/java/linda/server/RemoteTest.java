@@ -33,12 +33,9 @@ public abstract class RemoteTest {
   @After
   public void tearDown() {
     try {
-      Logger.log("Unbinding Linda Server", LogLevel.Info);
-      Naming.unbind(serverUrl);
-      Logger.log("Linda Server unbound", LogLevel.Info);
-
-    } catch (RemoteException | MalformedURLException | NotBoundException e) {
-      Logger.log(e.getMessage(), LogLevel.Fatal);
+      server.stop();
+    } catch (RemoteException e) {
+      Logger.log("Error while stopping Linda server.", LogLevel.Fatal);
       throw new RuntimeException(e);
     }
   }

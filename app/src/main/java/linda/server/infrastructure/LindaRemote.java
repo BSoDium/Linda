@@ -4,12 +4,20 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Collection;
 
-import linda.RemoteCallback;
 import linda.Linda.eventMode;
 import linda.Linda.eventTiming;
 import linda.Tuple;
 
 public interface LindaRemote extends Remote {
+
+  /**
+   * Stop the server.
+   * This should technically require a password, but who cares, we're
+   * running both the client and the server on the same machine anyways.
+   * 
+   * @throws RemoteException
+   */
+  public void stop() throws RemoteException;
 
   /**
    * Retrieve the URL at which the Linda server is available.

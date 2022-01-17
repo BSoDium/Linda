@@ -86,7 +86,7 @@ public enum LogLevel implements LogLevelInterface {
     }
 
     public String getIcon() {
-      return "⚠️";
+      return "🚨";
     }
 
   },
