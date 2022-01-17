@@ -57,6 +57,7 @@ public class Manager implements Runnable {
 
     private class CbGetResult implements Callback {
         public void call(Tuple t) { // [ Result, ?UUID, ?String, ?Integer ]
+            lastSearcherInteraction = LocalDateTime.now();
             String s = (String) t.get(2);
             Integer v = (Integer) t.get(3);
             if (v < bestvalue) {
