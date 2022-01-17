@@ -3,9 +3,8 @@ package linda.server.infrastructure;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.concurrent.Semaphore;
 
-import linda.Callback;
+import linda.RemoteCallback;
 import linda.Linda.eventMode;
 import linda.Linda.eventTiming;
 import linda.Tuple;
@@ -89,23 +88,10 @@ public interface LindaRemote extends Remote {
    * @param mode     the mode of the event
    * @param timing   the timing of the event
    * @param template the template to match
-   * @param callback the callback to run
+   * @param rcb      the callback to run
    * @throws RemoteException
    */
-  public void eventRegister(eventMode mode, eventTiming timing, Tuple template, Callback callback)
-      throws RemoteException;
-
-  /**
-   * Wait for a tuple matching the template to be written to the server, then
-   * return it.
-   * 
-   * @param mode     the mode of the event
-   * @param timing   the timing of the event
-   * @param template the template to match
-   * @return the tuple read
-   * @throws RemoteException
-   */
-  public Tuple eventWait(eventMode mode, eventTiming timing, Tuple template, Semaphore runEndSem)
+  public void eventRegister(eventMode mode, eventTiming timing, Tuple template, CallableRemote rcb)
       throws RemoteException;
 
   /**

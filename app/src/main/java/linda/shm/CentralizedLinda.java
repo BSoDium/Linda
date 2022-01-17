@@ -165,15 +165,13 @@ public class CentralizedLinda implements Linda {
 
     // if the event is immediate, remove the callback, then run it
     if (timing == eventTiming.IMMEDIATE) {
-      synchronized (database.getLock()) {
-        for (Tuple t : database.reversed()) {
-          if (t.matches(template)) {
-            callbacks.remove(e);
-            if (mode == eventMode.TAKE) {
-              database.remove(t);
-            }
-            callback.call(t);
+      for (Tuple t : database.clone().reversed()) { // clone instead of synchronized to avoid deadlock
+        if (t != null && t.matches(template)) {
+          callbacks.remove(e);
+          if (mode == eventMode.TAKE) {
+            database.remove(t);
           }
+          callback.call(t);
         }
       }
     }
@@ -206,16 +204,14 @@ public class CentralizedLinda implements Linda {
    */
   private void runCallBacks() {
     callbacks.clone().forEach(e -> { // clone the list to avoid concurrent modification
-      synchronized (database.getLock()) {
-        for (Tuple t : database.reversed()) {
-          if (t.matches(e.getTriggerTemplate())) {
-            callbacks.remove(e);
-            e.getCallback().call(t);
-            if (e.getMode() == eventMode.TAKE) {
-              database.remove(t);
-            }
-            break;
+      for (Tuple t : database.clone().reversed()) { // clone instead of synchronized to avoid deadlock
+        if (t.matches(e.getTriggerTemplate())) {
+          callbacks.remove(e);
+          e.getCallback().call(t);
+          if (e.getMode() == eventMode.TAKE) {
+            database.remove(t);
           }
+          break;
         }
       }
     });

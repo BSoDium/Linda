@@ -2,11 +2,10 @@ package linda.server;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.concurrent.Semaphore;
 
-import linda.AsynchronousCallback;
 import linda.Callback;
 import linda.Linda;
+import linda.RemoteCallback;
 import linda.Tuple;
 import linda.server.infrastructure.Client;
 import linda.server.log.LogLevel;
@@ -102,24 +101,14 @@ public class LindaClient extends Client implements Linda {
 
     @Override
     public void eventRegister(eventMode mode, eventTiming timing, Tuple template, Callback callback) {
-        new Thread() {
-            public void run() {
-                try {
-                    Semaphore runEndSem = new Semaphore(0);
-                    // wait for the event to happen
-                    Logger.log("Waiting for event...", LogLevel.Debug);
-                    Tuple t = server.eventWait(mode, timing, template, runEndSem);
-                    // call the callback
-                    callback.call(t);
-                    // release the semaphore
-                    runEndSem.release();
-                    Logger.log("Semaphore released", LogLevel.Debug);
-                } catch (RemoteException e) {
-                    Logger.log(e.getMessage().toString(), LogLevel.Error);
-                    throw new RuntimeException(e);
-                }
-            }
-        }.start();
+        RemoteCallback rcb;
+        try {
+            rcb = new RemoteCallback(callback);
+            this.server.eventRegister(mode, timing, template, rcb);
+        } catch (RemoteException e) {
+            Logger.log(e.getMessage().toString(), LogLevel.Error);
+            throw new RuntimeException(e);
+        }
 
     }
 

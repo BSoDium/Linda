@@ -9,12 +9,11 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.server.ExportException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Collection;
-import java.util.concurrent.Semaphore;
 
-import linda.Callback;
 import linda.Linda.eventMode;
 import linda.Linda.eventTiming;
 import linda.Tuple;
+import linda.server.infrastructure.CallableRemote;
 import linda.server.infrastructure.LindaRemote;
 import linda.server.log.LogLevel;
 import linda.server.log.Logger;
@@ -78,41 +77,9 @@ public class LindaServer extends UnicastRemoteObject implements LindaRemote {
     return linda.readAll(template);
   }
 
-  public void eventRegister(eventMode mode, eventTiming timing, Tuple template, Callback callback)
+  public void eventRegister(eventMode mode, eventTiming timing, Tuple template, CallableRemote rcb)
       throws RemoteException {
-    linda.eventRegister(mode, timing, template, callback);
-  }
-
-  public Tuple eventWait(eventMode mode, eventTiming timing, Tuple template, Semaphore runEndSem)
-      throws RemoteException {
-    // register a server-side callback which will trigger the client-side one
-    Semaphore runStartSem = new Semaphore(0);
-    linda.eventRegister(eventMode.READ, timing, template, new linda.Callback() {
-      public void call(Tuple t) {
-        runStartSem.release();
-        try {
-          runEndSem.acquire();
-          Logger.log("Semaphore acquired", LogLevel.Debug);
-        } catch (InterruptedException e) {
-          Logger.log(e.getMessage(), LogLevel.Fatal);
-          throw new RuntimeException(e);
-        }
-      }
-    });
-
-    // wait for the callback to be triggered
-    try {
-      runStartSem.acquire();
-    } catch (InterruptedException e) {
-      Logger.log(e.getMessage(), LogLevel.Fatal);
-      throw new RuntimeException(e);
-    }
-
-    if (mode == eventMode.READ) {
-      return linda.read(template);
-    } else {
-      return linda.take(template);
-    }
+    linda.eventRegister(mode, timing, template, rcb.getCallback());
   }
 
   public String fetchDebug(String prefix) throws RemoteException {

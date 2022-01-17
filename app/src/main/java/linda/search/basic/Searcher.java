@@ -7,7 +7,6 @@ import linda.Linda;
 import linda.Tuple;
 import linda.server.log.LogLevel;
 import linda.server.log.Logger;
-import linda.shm.ArrayListSync;
 
 public class Searcher implements Runnable {
 
@@ -21,7 +20,7 @@ public class Searcher implements Runnable {
     }
 
     public void run() {
-        Logger.log("Searcher " + id + " ready to comply.");
+        Logger.log("Searcher " + id + " ready to comply.", LogLevel.Debug);
 
         if (activeRequest == null) {
             activeRequest = linda.read(new Tuple(Code.Request, UUID.class, String.class));
@@ -38,7 +37,6 @@ public class Searcher implements Runnable {
             String val = (String) tv.get(1);
             int dist = getLevenshteinDistance(req, val);
             if (dist < 10) { // arbitrary
-                Logger.log("Sent: " + val, LogLevel.Debug);
                 linda.write(new Tuple(Code.Result, reqUUID, val, dist));
             }
         }
