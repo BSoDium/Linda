@@ -4,7 +4,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import linda.AsynchronousCallback;
 import linda.Callback;
 import linda.Linda;
 import linda.Tuple;
@@ -179,13 +178,6 @@ public class CentralizedLinda implements Linda {
 
   @Override
   public void debug(String prefix) {
-    debug(prefix, System.out);
-  }
-
-  public void debug(String prefix, PrintStream ps) {
-    PrintStream old = System.out;
-    System.setOut(ps);
-
     Logger.log(prefix + " Database:");
     for (Tuple t : database) {
       Logger.log(prefix + "  | " + t);
@@ -194,9 +186,6 @@ public class CentralizedLinda implements Linda {
     for (Event e : callbacks) {
       Logger.log(String.format("%s  | %s : %s -> %s", prefix, e.getMode(), e.getTriggerTemplate(), e.getCallback()));
     }
-
-    System.out.flush();
-    System.setOut(old);
   }
 
   /**

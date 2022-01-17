@@ -20,6 +20,14 @@ public interface LindaRemote extends Remote {
   public void stop() throws RemoteException;
 
   /**
+   * Set the time after which the server will shut down if not interacted with.
+   * Default is 20 seconds.
+   * 
+   * @param timeoutDelay time in seconds
+   */
+  public void setTimeoutDelay(int timeoutDelay) throws RemoteException;
+
+  /**
    * Retrieve the URL at which the Linda server is available.
    * 
    * @return the URL at which the Linda server is available.

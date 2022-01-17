@@ -27,14 +27,14 @@ public class TextSearch {
             Logger.log("Error while initializing Linda server.", LogLevel.Fatal);
             return;
         }
+        linda.setTimeoutDelay(10);
         serverUrl = linda.getURL();
 
         Manager manager1 = new Manager(new LindaClient(serverUrl), args[1], args[0]);
-        // Manager manager2 = new Manager(new LindaClient(serverUrl), args[1], args[0]);
+        (new Thread(manager1)).start();
+
         Searcher searcher1 = new Searcher(new LindaClient(serverUrl));
         // Searcher searcher2 = new Searcher(new LindaClient(serverUrl));
-        (new Thread(manager1)).start();
-        // (new Thread(manager2)).start();
         (new Thread(searcher1)).start();
         // (new Thread(searcher2)).start();
     }

@@ -11,6 +11,7 @@ import linda.server.log.Logger;
 public class Searcher implements Runnable {
 
     private static Tuple activeRequest;
+    private static Object lock = new Object();
     private UUID id;
     private Linda linda;
 
@@ -22,11 +23,13 @@ public class Searcher implements Runnable {
     public void run() {
         Logger.log("Searcher " + id + " ready to comply.", LogLevel.Debug);
 
-        if (activeRequest == null) {
-            activeRequest = linda.read(new Tuple(Code.Request, UUID.class, String.class));
-            Logger.log("New search request received from " + activeRequest.get(1), LogLevel.Debug);
-        } else {
-            Logger.log("Joining existing search request" + activeRequest.get(1), LogLevel.Debug);
+        synchronized (lock) {
+            if (activeRequest == null) {
+                activeRequest = linda.read(new Tuple(Code.Request, UUID.class, String.class));
+                Logger.log("New search request received from " + activeRequest.get(1), LogLevel.Debug);
+            } else {
+                Logger.log("Joining existing search request" + activeRequest.get(1), LogLevel.Debug);
+            }
         }
 
         UUID reqUUID = (UUID) activeRequest.get(1);

@@ -2,6 +2,7 @@ package linda.search.improved;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -20,6 +21,10 @@ public class Manager implements Runnable {
     private String search;
     private int bestvalue = Integer.MAX_VALUE; // lower is better
     private String bestresult;
+
+    private LocalDateTime lastSearcherInteraction = LocalDateTime.now();
+
+    private static final int TIMEOUT_DELAY = 5; // seconds
 
     public Manager(Linda linda, String pathname, String search) {
         this.linda = linda;
@@ -66,8 +71,27 @@ public class Manager implements Runnable {
 
     public void run() {
         this.loadData(pathname);
+        this.scheduleTimeoutCheck();
         this.addSearch(search);
         this.waitForEndSearch();
         Logger.log("Best result: \"" + bestresult + "\"");
+    }
+
+    private void scheduleTimeoutCheck() {
+        new Thread(() -> {
+            try {
+                Thread.sleep(TIMEOUT_DELAY * 1000);
+                // cancel the request and exit if no searcher have interacted recently
+                if (LocalDateTime.now().isAfter(lastSearcherInteraction.plusSeconds(TIMEOUT_DELAY))) {
+                    linda.take(new Tuple(Code.Request, this.reqUUID, String.class)); // remove query
+                    Logger.log("Request " + this.reqUUID + " cancelled due to inactivity.", LogLevel.Debug);
+                    Thread.currentThread().interrupt();
+                } else {
+                    scheduleTimeoutCheck();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 }
