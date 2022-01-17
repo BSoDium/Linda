@@ -10,8 +10,11 @@ import java.rmi.server.ExportException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Collection;
 
+import javax.security.auth.callback.Callback;
+
 import linda.Linda.eventMode;
 import linda.Linda.eventTiming;
+import linda.ProxyCallback;
 import linda.Tuple;
 import linda.server.infrastructure.CallableRemote;
 import linda.server.infrastructure.LindaRemote;
@@ -79,7 +82,7 @@ public class LindaServer extends UnicastRemoteObject implements LindaRemote {
 
   public void eventRegister(eventMode mode, eventTiming timing, Tuple template, CallableRemote rcb)
       throws RemoteException {
-    linda.eventRegister(mode, timing, template, rcb.getCallback());
+    linda.eventRegister(mode, timing, template, new ProxyCallback(rcb));
   }
 
   public String fetchDebug(String prefix) throws RemoteException {

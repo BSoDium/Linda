@@ -1,6 +1,5 @@
 package linda.search.improved;
 
-import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.UUID;
@@ -12,7 +11,7 @@ import linda.Tuple;
 import linda.server.log.LogLevel;
 import linda.server.log.Logger;
 
-public class Manager implements Runnable, Serializable {
+public class Manager implements Runnable {
 
     private Linda linda;
 

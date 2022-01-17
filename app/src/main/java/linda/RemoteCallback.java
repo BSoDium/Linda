@@ -13,14 +13,11 @@ public class RemoteCallback extends UnicastRemoteObject implements CallableRemot
     this.cb = cb;
   }
 
-  @Override
-  public void call(Tuple t) {
+  public void call(Tuple t) throws RemoteException {
     cb.call(t);
   }
 
-  @Override
-  public Callback getCallback() {
+  public Callback getCallback() throws RemoteException {
     return this.cb;
   }
-
 }
