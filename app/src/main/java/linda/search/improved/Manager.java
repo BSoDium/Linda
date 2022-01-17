@@ -1,12 +1,15 @@
-package linda.search.basic;
+package linda.search.improved;
 
-import java.util.UUID;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.stream.Stream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import linda.*;
+import java.util.UUID;
+import java.util.stream.Stream;
+
+import linda.Callback;
+import linda.Linda;
+import linda.Tuple;
+import linda.server.log.LogLevel;
+import linda.server.log.Logger;
 
 public class Manager implements Runnable {
 
@@ -27,8 +30,9 @@ public class Manager implements Runnable {
     private void addSearch(String search) {
         this.search = search;
         this.reqUUID = UUID.randomUUID();
-        System.out.println("Search " + this.reqUUID + " for " + this.search);
-        linda.eventRegister(Linda.eventMode.TAKE, Linda.eventTiming.IMMEDIATE, new Tuple(Code.Result, this.reqUUID, String.class, Integer.class), new CbGetResult());
+        Logger.log("New request initiated " + this.reqUUID + " for \'" + this.search + "\'", LogLevel.Debug);
+        linda.eventRegister(Linda.eventMode.TAKE, Linda.eventTiming.IMMEDIATE,
+                new Tuple(Code.Result, this.reqUUID, String.class, Integer.class), new CbGetResult());
         linda.write(new Tuple(Code.Request, this.reqUUID, this.search));
     }
 
@@ -43,19 +47,20 @@ public class Manager implements Runnable {
     private void waitForEndSearch() {
         linda.take(new Tuple(Code.Searcher, "done", this.reqUUID));
         linda.take(new Tuple(Code.Request, this.reqUUID, String.class)); // remove query
-        System.out.println("query done");
+        Logger.log("Request " + this.reqUUID + " fulfilled.", LogLevel.Debug);
     }
 
-    private class CbGetResult implements linda.Callback {
-        public void call(Tuple t) {  // [ Result, ?UUID, ?String, ?Integer ]
+    private class CbGetResult implements Callback {
+        public void call(Tuple t) { // [ Result, ?UUID, ?String, ?Integer ]
             String s = (String) t.get(2);
             Integer v = (Integer) t.get(3);
             if (v < bestvalue) {
                 bestvalue = v;
                 bestresult = s;
-                System.out.println("New best (" + bestvalue + "): \"" + bestresult + "\"");
+                Logger.log("New best (" + bestvalue + "): \"" + bestresult + "\"", LogLevel.Log);
             }
-            linda.eventRegister(Linda.eventMode.TAKE, Linda.eventTiming.IMMEDIATE, new Tuple(Code.Result, reqUUID, String.class, Integer.class), this);
+            linda.eventRegister(Linda.eventMode.TAKE, Linda.eventTiming.IMMEDIATE,
+                    new Tuple(Code.Result, reqUUID, String.class, Integer.class), this);
         }
     }
 
@@ -63,5 +68,6 @@ public class Manager implements Runnable {
         this.loadData(pathname);
         this.addSearch(search);
         this.waitForEndSearch();
+        Logger.log("Best result: \"" + bestresult + "\"");
     }
 }

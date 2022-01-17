@@ -1,24 +1,38 @@
-package linda.search.basic;
+package linda.search.improved;
 
-import linda.*;
 import java.util.Arrays;
 import java.util.UUID;
 
+import linda.Linda;
+import linda.Tuple;
+import linda.server.log.LogLevel;
+import linda.server.log.Logger;
+
 public class Searcher implements Runnable {
 
+    private static Tuple activeRequest;
+    private UUID id;
     private Linda linda;
 
     public Searcher(Linda linda) {
         this.linda = linda;
+        this.id = UUID.randomUUID();
     }
 
     public void run() {
-        System.out.println("Ready to do a search");
-        Tuple treq = linda.read(new Tuple(Code.Request, UUID.class, String.class));
-        UUID reqUUID = (UUID)treq.get(1);
-        String req = (String) treq.get(2);
+        Logger.log("Searcher " + id + " ready to comply.", LogLevel.Debug);
+
+        if (activeRequest == null) {
+            activeRequest = linda.read(new Tuple(Code.Request, UUID.class, String.class));
+            Logger.log("New search request received from " + activeRequest.get(1), LogLevel.Debug);
+        } else {
+            Logger.log("Joining existing search request" + activeRequest.get(1), LogLevel.Debug);
+        }
+
+        UUID reqUUID = (UUID) activeRequest.get(1);
+        String req = (String) activeRequest.get(2);
         Tuple tv;
-        System.out.println("Looking for: " + req);
+        Logger.log("Looking for: " + req, LogLevel.Debug);
         while ((tv = linda.tryTake(new Tuple(Code.Value, String.class))) != null) {
             String val = (String) tv.get(1);
             int dist = getLevenshteinDistance(req, val);
@@ -27,8 +41,9 @@ public class Searcher implements Runnable {
             }
         }
         linda.write(new Tuple(Code.Searcher, "done", reqUUID));
+        Logger.log("Search " + reqUUID + " done.", LogLevel.Debug);
     }
-    
+
     /*****************************************************************/
 
     /* Levenshtein distance is rather slow */
@@ -39,15 +54,13 @@ public class Searcher implements Runnable {
             for (int j = 0; j <= y.length(); j++) {
                 if (i == 0) {
                     dp[i][j] = j;
-                }
-                else if (j == 0) {
+                } else if (j == 0) {
                     dp[i][j] = i;
-                }
-                else {
-                    dp[i][j] = min(dp[i - 1][j - 1] 
-                                   + costOfSubstitution(x.charAt(i - 1), y.charAt(j - 1)), 
-                                   dp[i - 1][j] + 1, 
-                                   dp[i][j - 1] + 1);
+                } else {
+                    dp[i][j] = min(dp[i - 1][j - 1]
+                            + costOfSubstitution(x.charAt(i - 1), y.charAt(j - 1)),
+                            dp[i - 1][j] + 1,
+                            dp[i][j - 1] + 1);
                 }
             }
         }
@@ -63,4 +76,3 @@ public class Searcher implements Runnable {
     }
 
 }
-

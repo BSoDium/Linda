@@ -20,7 +20,15 @@
     },
     {
       "type": "java",
-      "name": "Launch TextSearch",
+      "name": "Launch improved TextSearch",
+      "request": "launch",
+      "mainClass": "linda.search.improved.TextSearch",
+      "projectName": "app",
+      "args": ["\"agneau\"", "./app/src/main/resources/dict/french"]
+    },
+    {
+      "type": "java",
+      "name": "Launch basic TextSearch",
       "request": "launch",
       "mainClass": "linda.search.basic.TextSearch",
       "projectName": "app",
