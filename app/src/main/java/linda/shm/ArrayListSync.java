@@ -3,6 +3,10 @@ package linda.shm;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
+/**
+ * A Thread-safe implementation of ArrayList that uses a lock to synchronize
+ * access.
+ */
 public class ArrayListSync<A> extends ArrayList<A> {
   private final Object lock = new Object();
 
@@ -14,6 +18,9 @@ public class ArrayListSync<A> extends ArrayList<A> {
     super(list);
   }
 
+  /**
+   * Adds an element to the list.
+   */
   @Override
   public boolean add(A a) {
     synchronized (lock) {
@@ -21,6 +28,19 @@ public class ArrayListSync<A> extends ArrayList<A> {
     }
   }
 
+  /**
+   * Adds an element to the list.
+   * 
+   * @param index
+   * @apiNote This method is not thread-safe.
+   */
+  public boolean defaultAdd(A a) {
+    return super.add(a);
+  }
+
+  /**
+   * Removes an element from the list.
+   */
   @Override
   public boolean remove(Object o) {
     synchronized (lock) {
@@ -28,11 +48,19 @@ public class ArrayListSync<A> extends ArrayList<A> {
     }
   }
 
-  @Override
-  public void forEach(Consumer<? super A> action) {
-    super.forEach(action);
+  /**
+   * Removes an element from the list.
+   * 
+   * @param index
+   * @apiNote This method is not thread-safe.
+   */
+  public boolean defaultRemove(Object o) {
+    return super.remove(o);
   }
 
+  /**
+   * Returns a new ArrayList containing all elements in this list.
+   */
   @Override
   public ArrayListSync<A> clone() {
     return new ArrayListSync<A>(this);

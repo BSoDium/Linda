@@ -8,7 +8,10 @@ import linda.Linda;
 import linda.Tuple;
 import linda.server.log.Logger;
 
-/** Shared memory implementation of Linda. */
+/**
+ * Primitive shared memory implementation of Linda (doesn't support
+ * multithreading).
+ */
 public class PrimitiveCentralizedLinda implements Linda {
   private ArrayListSync<Tuple> database;
   private HashMapSync<Tuple, Callback> readCallbacks;

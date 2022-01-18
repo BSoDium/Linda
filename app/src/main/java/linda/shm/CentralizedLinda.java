@@ -8,7 +8,7 @@ import linda.Linda;
 import linda.Tuple;
 import linda.server.log.Logger;
 
-/** Shared memory implementation of Linda. */
+/** Shared memory, thread-safe implementation of Linda. */
 public class CentralizedLinda implements Linda {
   private ArrayListSync<Tuple> database;
   private ArrayListSync<Event> callbacks;
@@ -37,7 +37,7 @@ public class CentralizedLinda implements Linda {
   public Tuple take(Tuple template) {
     Tuple ret;
 
-    // block until a matching tuple is found (multithreaded version)
+    // block until a matching tuple is found
     while (true) {
       // try to find a tuple matching the template
       if ((ret = tryTake(template)) != null) {
