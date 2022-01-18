@@ -27,6 +27,7 @@ public class TextSearch {
             Logger.log("Error while initializing Linda server.", LogLevel.Fatal);
             return;
         }
+        linda.doesTimeout(true);
         linda.setTimeoutDelay(5);
         serverUrl = linda.getURL();
 
@@ -34,8 +35,8 @@ public class TextSearch {
         (new Thread(manager1)).start();
 
         Searcher searcher1 = new Searcher(new LindaClient(serverUrl));
-        Searcher searcher2 = new Searcher(new LindaClient(serverUrl));
+        // Searcher searcher2 = new Searcher(new LindaClient(serverUrl));
         (new Thread(searcher1)).start();
-        (new Thread(searcher2)).start();
+        // (new Thread(searcher2)).start();
     }
 }

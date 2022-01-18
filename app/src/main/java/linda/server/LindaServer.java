@@ -12,9 +12,9 @@ import java.rmi.server.UnicastRemoteObject;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
+import linda.Linda;
 import linda.Linda.eventMode;
 import linda.Linda.eventTiming;
-import linda.Linda;
 import linda.ProxyCallback;
 import linda.Tuple;
 import linda.server.infrastructure.CallableRemote;
@@ -27,6 +27,7 @@ public class LindaServer extends UnicastRemoteObject implements LindaRemote {
   private Linda linda;
   private LocalDateTime lastInteraction = LocalDateTime.now();
   private String url;
+  private boolean doesTimeout = false;
   /** Inactivity time before the server is shut down (seconds). */
   private int timeoutDelay = 20;
 
@@ -55,6 +56,10 @@ public class LindaServer extends UnicastRemoteObject implements LindaRemote {
       }
     }
     scheduleTimeoutCheck();
+  }
+
+  public void doesTimeout(boolean doTimeout) {
+    this.doesTimeout = doTimeout;
   }
 
   public void stop() throws RemoteException {
@@ -141,6 +146,9 @@ public class LindaServer extends UnicastRemoteObject implements LindaRemote {
    */
   private void scheduleTimeoutCheck() {
     new Thread(() -> {
+      if (!doesTimeout) {
+        scheduleTimeoutCheck();
+      }
       try {
         Thread.sleep(TIMEOUT_CHECK_DELAY * 1000);
         // stop the server if it has not been interacted with in the last 20 seconds

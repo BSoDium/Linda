@@ -6,6 +6,7 @@ import java.util.Collection;
 import linda.Callback;
 import linda.Linda;
 import linda.Tuple;
+import linda.server.log.LogLevel;
 import linda.server.log.Logger;
 
 /** Shared memory, thread-safe implementation of Linda. */
@@ -154,13 +155,14 @@ public class CentralizedLinda implements Linda {
 
   @Override
   public void debug(String prefix) {
-    Logger.log(prefix + " Database:");
+    Logger.log(prefix + " Database:", LogLevel.Debug);
     for (Tuple t : database) {
-      Logger.log(prefix + "  | " + t);
+      Logger.log(prefix + "  | " + t, LogLevel.Debug);
     }
-    Logger.log(prefix + " Callbacks:");
+    Logger.log(prefix + " Callbacks:", LogLevel.Debug);
     for (Event e : callbacks) {
-      Logger.log(String.format("%s  | %s : %s -> %s", prefix, e.getMode(), e.getTriggerTemplate(), e.getCallback()));
+      Logger.log(String.format("%s  | %s : %s -> %s", prefix, e.getMode(), e.getTriggerTemplate(), e.getCallback()),
+          LogLevel.Debug);
     }
   }
 

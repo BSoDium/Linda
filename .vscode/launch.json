@@ -24,7 +24,7 @@
       "request": "launch",
       "mainClass": "linda.search.improved.TextSearch",
       "projectName": "app",
-      "args": ["\"agneau\"", "./app/src/main/resources/dict/french"]
+      "args": ["\"abaca\"", "./app/src/main/resources/dict/french"]
     },
     {
       "type": "java",
