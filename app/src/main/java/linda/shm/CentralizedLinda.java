@@ -85,7 +85,6 @@ public class CentralizedLinda implements Linda {
       for (Tuple t : database) {
         if (t.matches(template)) {
           database.remove(t);
-          runCallBacks();
           return t;
         }
       }
@@ -116,7 +115,6 @@ public class CentralizedLinda implements Linda {
         }
       }
     }
-    runCallBacks();
     return ret;
   }
 

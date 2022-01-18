@@ -4,7 +4,8 @@
   - [Description](#description)
   - [Installation](#installation)
   - [Usage](#usage)
-  - [Contributeurs](#contributeurs)
+  - [Known issues](#known-issues)
+  - [Contributors](#contributors)
 
 ## Description
 
@@ -13,6 +14,8 @@ A remotely accessible Tuple database, implemented in Java using RMI Remote objec
 ## Installation
 
 This project uses the gradle package manager. To install the required dependencies, run `gradle clean install`.
+
+Tested on Java 17. Any versions above should hopefully work.
 
 ## Usage
 
