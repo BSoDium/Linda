@@ -56,7 +56,7 @@ public class Logger {
    * @param message the message to log.
    */
   public static void debug(String message) {
-    log(message);
+    log(message, LogLevel.Debug);
   }
 
   /**
@@ -65,7 +65,7 @@ public class Logger {
    * @param message the message to log.
    */
   public static void log(String message) {
-    log(message);
+    log(message, LogLevel.Log);
   };
 
   /**
@@ -74,7 +74,7 @@ public class Logger {
    * @param message
    */
   public static void info(String message) {
-    log(message);
+    log(message, LogLevel.Info);
   }
 
   /**
@@ -83,7 +83,7 @@ public class Logger {
    * @param message
    */
   public static void warn(String message) {
-    log(message);
+    log(message, LogLevel.Warn);
   }
 
   /**
@@ -92,14 +92,14 @@ public class Logger {
    * @param message
    */
   public static void err(String message) {
-    log(message);
+    log(message, LogLevel.Error);
   }
 
   /**
    * Prints a message with the {@code LogLevel.Fatal} level.
    */
   public static void fatal(String message) {
-    log(message);
+    log(message, LogLevel.Fatal);
   }
 
   /**
