@@ -6,6 +6,21 @@
   "configurations": [
     {
       "type": "java",
+      "name": "Launch RunClient",
+      "request": "launch",
+      "mainClass": "linda.net.RunClient",
+      "projectName": "app",
+      "args": "serverUrl"
+    },
+    {
+      "type": "java",
+      "name": "Launch RunServer",
+      "request": "launch",
+      "mainClass": "linda.net.RunServer",
+      "projectName": "app"
+    },
+    {
+      "type": "java",
       "name": "Launch Current File",
       "request": "launch",
       "mainClass": "${file}"
@@ -24,7 +39,7 @@
       "request": "launch",
       "mainClass": "linda.search.improved.TextSearch",
       "projectName": "app",
-      "args": ["\"abaca\"", "./app/src/main/resources/dict/french"]
+      "args": ["\"agneau\"", "./app/src/main/resources/dict/french"]
     },
     {
       "type": "java",

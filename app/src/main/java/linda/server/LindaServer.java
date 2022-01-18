@@ -47,6 +47,7 @@ public class LindaServer extends UnicastRemoteObject implements LindaRemote {
         Logger.log(String.format("Registering Linda Server at %s", url), LogLevel.Info);
         Naming.rebind(url, this);
         isServerRunning = true;
+        Logger.log("Linda Server started", LogLevel.Info);
       } catch (ExportException e) { // Port already in use
         Logger.log(String.format("Port %d already in use, trying next one", port + retries), LogLevel.Warn);
         retries++;
@@ -67,6 +68,7 @@ public class LindaServer extends UnicastRemoteObject implements LindaRemote {
       Logger.log("Unbinding Linda Server.", LogLevel.Info);
       Naming.unbind(url);
       UnicastRemoteObject.unexportObject(this, true);
+      Logger.log("Linda Server stopped.", LogLevel.Info);
       // TODO: find a way to properly close all the rmi connections instead
       System.exit(0);
 
@@ -146,13 +148,10 @@ public class LindaServer extends UnicastRemoteObject implements LindaRemote {
    */
   private void scheduleTimeoutCheck() {
     new Thread(() -> {
-      if (!doesTimeout) {
-        scheduleTimeoutCheck();
-      }
       try {
         Thread.sleep(TIMEOUT_CHECK_DELAY * 1000);
         // stop the server if it has not been interacted with in the last 20 seconds
-        if (LocalDateTime.now().isAfter(lastInteraction.plusSeconds(timeoutDelay))) {
+        if (doesTimeout && LocalDateTime.now().isAfter(lastInteraction.plusSeconds(timeoutDelay))) {
           Logger.log(
               "Linda Server has not been interacted with for " + timeoutDelay + " seconds, shutting down.",
               LogLevel.Warn);
