@@ -12,9 +12,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import linda.Linda;
-import linda.Tuple;
 import linda.Linda.eventMode;
 import linda.Linda.eventTiming;
+import linda.Tuple;
 
 /**
  ** The model of the whiteboard.
@@ -45,7 +45,7 @@ public class WhiteboardModel {
     /** The lines and their respective colors that this client knows about. */
     private Set<ColoredShape> lines = new HashSet<>();
 
-    private boolean eraseFlag = false; // set true when erase command received
+    // private boolean eraseFlag = false; // set true when erase command received
 
     private Tuple motifShape = new Tuple(KEY_WHITEBOARD, Command.DRAW, ColoredShape.class);
     private Tuple motifErase = new Tuple(KEY_WHITEBOARD, Command.ERASEALL);

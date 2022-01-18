@@ -29,12 +29,12 @@ import java.awt.event.ItemListener;
 public class WhiteboardControls extends Panel implements ItemListener {
 
     private WhiteboardView view;
-    private WhiteboardModel model;
+    // private WhiteboardModel model;
     private static String ERASEALL_LABEL = "Erase All";
     private static String EXIT_LABEL = "Exit";
     private static String ROTATE_LABEL = "Rotate";
     private static String EXCLUSIVE_LABEL = "Exclusive Access";
-    private static String PENDING_LABEL = "Pending...";
+    // private static String PENDING_LABEL = "Pending...";
     private static String RELEASE_LABEL = "Release Exclusive";
 
     private Button eraseAllButton;
@@ -52,7 +52,7 @@ public class WhiteboardControls extends Panel implements ItemListener {
     public WhiteboardControls(WhiteboardView view, WhiteboardModel model) {
 
         this.view = view;
-        this.model = model;
+        // this.model = model;
         Panel pLine1 = new Panel();
         Panel pLine2 = new Panel();
         setLayout(new GridLayout(2, 1));
@@ -157,11 +157,11 @@ public class WhiteboardControls extends Panel implements ItemListener {
     private class ExclusiveButtonAction implements ActionListener {
 
         protected boolean hasExclusive = false;
-        private Button button;
+        // private Button button;
         private WhiteboardModel target;
 
         public ExclusiveButtonAction(Button b, WhiteboardModel t) {
-            button = b;
+            // button = b;
             target = t;
         }
 
