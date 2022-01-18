@@ -1,6 +1,6 @@
 package linda;
 
-@SuppressWarnings("serial")
+// @SuppressWarnings("serial")
 public class TupleFormatException extends IllegalArgumentException {
 
     public TupleFormatException(String s) {
