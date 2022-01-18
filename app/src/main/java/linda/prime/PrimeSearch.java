@@ -71,7 +71,7 @@ public class PrimeSearch {
         }
       }
     }
-    return (Integer[]) primes.toArray(Integer[]::new);
+    return (Integer[]) primes.toArray(new Integer[primes.size()]);
   }
 
   /**
@@ -101,7 +101,7 @@ public class PrimeSearch {
       }
     }
 
-    return output.toArray(Integer[]::new);
+    return output.toArray(new Integer[output.size()]);
   }
 
   public static void main(String[] args) {
