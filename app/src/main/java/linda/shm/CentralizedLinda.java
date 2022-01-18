@@ -36,14 +36,9 @@ public class CentralizedLinda implements Linda {
   @Override
   public Tuple take(Tuple template) {
     // try to find a tuple matching the template
-    synchronized (database.getLock()) {
-      for (Tuple t : database) {
-        if (t.matches(template)) {
-          database.remove(t);
-          runCallBacks();
-          return t;
-        }
-      }
+    Tuple ret;
+    if ((ret = tryTake(template)) != null) {
+      return ret;
     }
 
     // block until a matching tuple is found (multithreaded version)
@@ -57,14 +52,8 @@ public class CentralizedLinda implements Linda {
         e.printStackTrace();
       }
       // retry
-      synchronized (database.getLock()) {
-        for (Tuple t : database) {
-          if (t.matches(template)) {
-            database.remove(t);
-            runCallBacks();
-            return t;
-          }
-        }
+      if ((ret = tryTake(template)) != null) {
+        return ret;
       }
     }
   }
@@ -72,12 +61,9 @@ public class CentralizedLinda implements Linda {
   @Override
   public Tuple read(Tuple template) {
     // try to find a tuple matching the template
-    synchronized (database.getLock()) {
-      for (Tuple t : database) {
-        if (t.matches(template)) {
-          return t;
-        }
-      }
+    Tuple ret;
+    if ((ret = tryRead(template)) != null) {
+      return ret;
     }
 
     // block until a matching tuple is found
@@ -91,12 +77,8 @@ public class CentralizedLinda implements Linda {
         e.printStackTrace();
       }
       // retry
-      synchronized (database.getLock()) {
-        for (Tuple t : database) {
-          if (t.matches(template)) {
-            return t;
-          }
-        }
+      if ((ret = tryRead(template)) != null) {
+        return ret;
       }
     }
   }
