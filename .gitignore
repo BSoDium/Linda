@@ -8,6 +8,7 @@ build
 /doc/report/*.out
 /doc/report/*.toc
 /doc/report/*.aux
+/doc/report/*.pdf
 
 .gradle
 **/build/
