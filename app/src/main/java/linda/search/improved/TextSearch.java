@@ -34,8 +34,8 @@ public class TextSearch {
         (new Thread(manager1)).start();
 
         Searcher searcher1 = new Searcher(new LindaClient(serverUrl));
-        // Searcher searcher2 = new Searcher(new LindaClient(serverUrl));
+        Searcher searcher2 = new Searcher(new LindaClient(serverUrl));
         (new Thread(searcher1)).start();
-        // (new Thread(searcher2)).start();
+        (new Thread(searcher2)).start();
     }
 }

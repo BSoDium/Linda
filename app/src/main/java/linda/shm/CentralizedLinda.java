@@ -35,50 +35,45 @@ public class CentralizedLinda implements Linda {
 
   @Override
   public Tuple take(Tuple template) {
-    // try to find a tuple matching the template
     Tuple ret;
-    if ((ret = tryTake(template)) != null) {
-      return ret;
-    }
 
     // block until a matching tuple is found (multithreaded version)
     while (true) {
+      // try to find a tuple matching the template
+      if ((ret = tryTake(template)) != null) {
+        return ret;
+      }
+
+      // wait for a matching tuple to be added to the database
       try {
-        // wait for a matching tuple to be added to the database
         synchronized (lock) {
           lock.wait();
         }
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
-      // retry
-      if ((ret = tryTake(template)) != null) {
-        return ret;
-      }
+
     }
   }
 
   @Override
   public Tuple read(Tuple template) {
-    // try to find a tuple matching the template
     Tuple ret;
-    if ((ret = tryRead(template)) != null) {
-      return ret;
-    }
 
     // block until a matching tuple is found
     while (true) {
+      // try to find a tuple matching the template
+      if ((ret = tryRead(template)) != null) {
+        return ret;
+      }
+
+      // wait for a matching tuple to be added to the database
       try {
-        // wait for a matching tuple to be added to the database
         synchronized (lock) {
           lock.wait();
         }
       } catch (InterruptedException e) {
         e.printStackTrace();
-      }
-      // retry
-      if ((ret = tryRead(template)) != null) {
-        return ret;
       }
     }
   }
