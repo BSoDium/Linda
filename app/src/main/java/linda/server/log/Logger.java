@@ -51,13 +51,56 @@ public class Logger {
   }
 
   /**
-   * Logs a message with the default level {@code LogLevel.Log}.
+   * Prints a message with the {@code LogLevel.Debug} level.
+   * 
+   * @param message the message to log.
+   */
+  public static void debug(String message) {
+    log(message);
+  }
+
+  /**
+   * Prints a message with the {@code LogLevel.Log} level.
    * 
    * @param message the message to log.
    */
   public static void log(String message) {
-    log(message, LogLevel.Log);
+    log(message);
   };
+
+  /**
+   * Prints a message with the {@code LogLevel.Info} level.
+   * 
+   * @param message
+   */
+  public static void info(String message) {
+    log(message);
+  }
+
+  /**
+   * Prints a message with the {@code LogLevel.Warn} level.
+   * 
+   * @param message
+   */
+  public static void warn(String message) {
+    log(message);
+  }
+
+  /**
+   * Prints a message with the {@code LogLevel.Err} level.
+   * 
+   * @param message
+   */
+  public static void err(String message) {
+    log(message);
+  }
+
+  /**
+   * Prints a message with the {@code LogLevel.Fatal} level.
+   */
+  public static void fatal(String message) {
+    log(message);
+  }
 
   /**
    * Prints the history of the logger.

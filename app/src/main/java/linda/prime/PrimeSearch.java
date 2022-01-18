@@ -8,7 +8,6 @@ import linda.Linda;
 import linda.Linda.eventMode;
 import linda.Linda.eventTiming;
 import linda.Tuple;
-import linda.server.log.LogLevel;
 import linda.server.log.Logger;
 import linda.shm.CentralizedLinda;
 
@@ -118,14 +117,14 @@ public class PrimeSearch {
 
     long start = System.currentTimeMillis();
     primes = PrimeSearch.sequentialSearch(k);
-    Logger.log(new ArrayList<Integer>(Arrays.asList(primes)).toString(), LogLevel.Debug);
+    Logger.debug(new ArrayList<Integer>(Arrays.asList(primes)).toString());
     long end = System.currentTimeMillis();
-    Logger.log("Sequential search took " + (end - start) + " ms.", LogLevel.Info);
+    Logger.info("Sequential search took " + (end - start) + " ms.");
 
     start = System.currentTimeMillis();
     primes = PrimeSearch.parallelSearch(k);
-    Logger.log(new ArrayList<Integer>(Arrays.asList(primes)).toString(), LogLevel.Debug);
+    Logger.debug(new ArrayList<Integer>(Arrays.asList(primes)).toString());
     end = System.currentTimeMillis();
-    Logger.log("Parallel search took " + (end - start) + " ms.", LogLevel.Info);
+    Logger.info("Parallel search took " + (end - start) + " ms.");
   }
 }

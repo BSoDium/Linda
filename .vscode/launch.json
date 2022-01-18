@@ -10,7 +10,7 @@
       "request": "launch",
       "mainClass": "linda.net.RunClient",
       "projectName": "app",
-      "args": "serverUrl"
+      "args": "//172.22.226.168:4000/LindaServer"
     },
     {
       "type": "java",

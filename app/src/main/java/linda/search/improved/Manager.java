@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 import linda.Callback;
 import linda.Linda;
 import linda.Tuple;
-import linda.server.log.LogLevel;
 import linda.server.log.Logger;
 
 public class Manager implements Runnable {
@@ -38,7 +37,7 @@ public class Manager implements Runnable {
     private void addSearch(String search) {
         this.search = search;
         this.reqUUID = UUID.randomUUID();
-        Logger.log("New request initiated " + this.reqUUID + " for \'" + this.search + "\'", LogLevel.Debug);
+        Logger.debug("New request initiated " + this.reqUUID + " for \'" + this.search + "\'");
         linda.eventRegister(Linda.eventMode.TAKE, Linda.eventTiming.IMMEDIATE,
                 new Tuple(Code.Result, this.reqUUID, String.class, Integer.class), new CbGetResult());
         linda.write(new Tuple(Code.Request, this.reqUUID, this.search));
@@ -55,7 +54,7 @@ public class Manager implements Runnable {
     private void waitForEndSearch() {
         linda.take(new Tuple(Code.Searcher, "done", this.reqUUID));
         linda.take(new Tuple(Code.Request, this.reqUUID, String.class)); // remove query
-        Logger.log("Request " + this.reqUUID + " fulfilled.", LogLevel.Debug);
+        Logger.debug("Request " + this.reqUUID + " fulfilled.");
     }
 
     private class CbGetResult implements Callback {
@@ -66,7 +65,7 @@ public class Manager implements Runnable {
             if (v < bestvalue) {
                 bestvalue = v;
                 bestresult = s;
-                Logger.log("New best (" + bestvalue + "): \"" + bestresult + "\"", LogLevel.Log);
+                Logger.log("New best (" + bestvalue + "): \"" + bestresult + "\"");
             }
             linda.eventRegister(Linda.eventMode.TAKE, Linda.eventTiming.IMMEDIATE,
                     new Tuple(Code.Result, reqUUID, String.class, Integer.class), this);
@@ -88,7 +87,7 @@ public class Manager implements Runnable {
                 // cancel the request and exit if no searcher have interacted recently
                 if (LocalDateTime.now().isAfter(lastSearcherInteraction.plusSeconds(TIMEOUT_DELAY))) {
                     linda.take(new Tuple(Code.Request, this.reqUUID, String.class)); // remove query
-                    Logger.log("Request " + this.reqUUID + " cancelled due to inactivity.", LogLevel.Debug);
+                    Logger.debug("Request " + this.reqUUID + " cancelled due to inactivity.");
                     Thread.currentThread().interrupt();
                 } else {
                     scheduleTimeoutCheck();

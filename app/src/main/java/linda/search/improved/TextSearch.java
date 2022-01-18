@@ -4,7 +4,6 @@ import java.rmi.RemoteException;
 
 import linda.server.LindaClient;
 import linda.server.LindaServer;
-import linda.server.log.LogLevel;
 import linda.server.log.Logger;
 
 public class TextSearch {
@@ -24,7 +23,7 @@ public class TextSearch {
         try {
             linda = new LindaServer(HOST, PORT, ROUTEPATH);
         } catch (RemoteException e) {
-            Logger.log("Error while initializing Linda server.", LogLevel.Fatal);
+            Logger.fatal("Error while initializing Linda server.");
             return;
         }
         linda.doesTimeout(true);

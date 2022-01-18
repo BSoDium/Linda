@@ -5,7 +5,6 @@ import java.rmi.RemoteException;
 import org.junit.After;
 import org.junit.Before;
 
-import linda.server.log.LogLevel;
 import linda.server.log.Logger;
 
 public abstract class RemoteTest {
@@ -22,7 +21,7 @@ public abstract class RemoteTest {
       server = new LindaServer(HOST, PORT, ROUTEPATH);
       serverUrl = server.getURL();
     } catch (RemoteException e) { // Something went wrong
-      Logger.log(e.getMessage(), LogLevel.Fatal);
+      Logger.fatal(e.getMessage());
       throw new RuntimeException(e);
     }
   }
@@ -32,7 +31,7 @@ public abstract class RemoteTest {
     try {
       server.stop();
     } catch (RemoteException e) {
-      Logger.log("Error while stopping Linda server.", LogLevel.Fatal);
+      Logger.fatal("Error while stopping Linda server.");
       throw new RuntimeException(e);
     }
   }

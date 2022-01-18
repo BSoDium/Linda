@@ -3,7 +3,6 @@ package linda;
 import java.rmi.RemoteException;
 
 import linda.server.infrastructure.CallableRemote;
-import linda.server.log.LogLevel;
 import linda.server.log.Logger;
 
 public class ProxyCallback implements Callback {
@@ -17,7 +16,7 @@ public class ProxyCallback implements Callback {
     try {
       cb.call(t);
     } catch (RemoteException e) {
-      Logger.log(e.getMessage().toString(), LogLevel.Error);
+      Logger.err(e.getMessage().toString());
       throw new RuntimeException(e);
     }
   }

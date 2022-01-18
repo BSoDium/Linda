@@ -1,7 +1,6 @@
 package linda.shm;
 
 import java.util.ArrayList;
-import java.util.function.Consumer;
 
 /**
  * A Thread-safe implementation of ArrayList that uses a lock to synchronize

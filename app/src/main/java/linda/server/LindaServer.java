@@ -44,15 +44,15 @@ public class LindaServer extends UnicastRemoteObject implements LindaRemote {
       try {
         LocateRegistry.createRegistry(port + retries);
         url = String.format("//%s:%d%s", host, port + retries, path);
-        Logger.log(String.format("Registering Linda Server at %s", url), LogLevel.Info);
+        Logger.info(String.format("Registering Linda Server at %s", url));
         Naming.rebind(url, this);
         isServerRunning = true;
-        Logger.log("Linda Server started", LogLevel.Info);
+        Logger.info("Linda Server started");
       } catch (ExportException e) { // Port already in use
-        Logger.log(String.format("Port %d already in use, trying next one", port + retries), LogLevel.Warn);
+        Logger.warn(String.format("Port %d already in use, trying next one", port + retries));
         retries++;
       } catch (MalformedURLException e) { // Something went wrong
-        Logger.log(e.getMessage(), LogLevel.Fatal);
+        Logger.fatal(e.getMessage());
         throw new RuntimeException(e);
       }
     }
@@ -65,15 +65,15 @@ public class LindaServer extends UnicastRemoteObject implements LindaRemote {
 
   public void stop() throws RemoteException {
     try {
-      Logger.log("Unbinding Linda Server.", LogLevel.Info);
+      Logger.info("Unbinding Linda Server.");
       Naming.unbind(url);
       UnicastRemoteObject.unexportObject(this, true);
-      Logger.log("Linda Server stopped.", LogLevel.Info);
+      Logger.info("Linda Server stopped.");
       // TODO: find a way to properly close all the rmi connections instead
       System.exit(0);
 
     } catch (RemoteException | MalformedURLException | NotBoundException e) {
-      Logger.log(e.getMessage(), LogLevel.Fatal);
+      Logger.fatal(e.getMessage());
       throw new RuntimeException(e);
     }
   }
@@ -160,7 +160,7 @@ public class LindaServer extends UnicastRemoteObject implements LindaRemote {
           scheduleTimeoutCheck();
         }
       } catch (InterruptedException | RemoteException e) {
-        Logger.log(e.getMessage(), LogLevel.Fatal);
+        Logger.fatal(e.getMessage());
         throw new RuntimeException(e);
       }
     }).start();

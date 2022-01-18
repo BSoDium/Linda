@@ -155,11 +155,11 @@ public class CentralizedLinda implements Linda {
 
   @Override
   public void debug(String prefix) {
-    Logger.log(prefix + " Database:", LogLevel.Debug);
+    Logger.debug(prefix + " Database:");
     for (Tuple t : database) {
-      Logger.log(prefix + "  | " + t, LogLevel.Debug);
+      Logger.debug(prefix + "  | " + t);
     }
-    Logger.log(prefix + " Callbacks:", LogLevel.Debug);
+    Logger.debug(prefix + " Callbacks:");
     for (Event e : callbacks) {
       Logger.log(String.format("%s  | %s : %s -> %s", prefix, e.getMode(), e.getTriggerTemplate(), e.getCallback()),
           LogLevel.Debug);

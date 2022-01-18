@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import linda.Linda;
 import linda.Tuple;
-import linda.server.log.LogLevel;
 import linda.server.log.Logger;
 
 public class Searcher implements Runnable {
@@ -19,15 +18,15 @@ public class Searcher implements Runnable {
     }
 
     public void run() {
-        Logger.log("Searcher " + id + " ready to comply.", LogLevel.Debug);
+        Logger.debug("Searcher " + id + " ready to comply.");
 
         Tuple activeRequest = linda.read(new Tuple(Code.Request, UUID.class, String.class));
-        Logger.log("Search request received from " + activeRequest.get(1), LogLevel.Debug);
+        Logger.debug("Search request received from " + activeRequest.get(1));
 
         UUID reqUUID = (UUID) activeRequest.get(1);
         String req = (String) activeRequest.get(2);
         Tuple tv;
-        Logger.log("Looking for: " + req, LogLevel.Debug);
+        Logger.debug("Looking for: " + req);
         while ((tv = linda.tryTake(new Tuple(Code.Value, String.class))) != null) {
             String val = (String) tv.get(1);
             int dist = getLevenshteinDistance(req, val);
@@ -36,7 +35,7 @@ public class Searcher implements Runnable {
             }
         }
         linda.write(new Tuple(Code.Searcher, "done", reqUUID));
-        Logger.log("Search " + reqUUID + " done.", LogLevel.Debug);
+        Logger.debug("Search " + reqUUID + " done.");
     }
 
     /*****************************************************************/
