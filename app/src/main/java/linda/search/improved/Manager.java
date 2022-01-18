@@ -24,7 +24,10 @@ public class Manager implements Runnable {
 
     private LocalDateTime lastSearcherInteraction = LocalDateTime.now();
 
+    /** Inactivity time before the request is aborted (seconds). */
     private static final int TIMEOUT_DELAY = 5; // seconds
+    /** Delay between scheduled timeout checks (seconds). */
+    private static final int TIMEOUT_CHECK_DELAY = 1; // seconds
 
     public Manager(Linda linda, String pathname, String search) {
         this.linda = linda;
@@ -81,7 +84,7 @@ public class Manager implements Runnable {
     private void scheduleTimeoutCheck() {
         new Thread(() -> {
             try {
-                Thread.sleep(TIMEOUT_DELAY * 1000);
+                Thread.sleep(TIMEOUT_CHECK_DELAY * 1000);
                 // cancel the request and exit if no searcher have interacted recently
                 if (LocalDateTime.now().isAfter(lastSearcherInteraction.plusSeconds(TIMEOUT_DELAY))) {
                     linda.take(new Tuple(Code.Request, this.reqUUID, String.class)); // remove query

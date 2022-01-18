@@ -27,7 +27,7 @@ public class TextSearch {
             Logger.log("Error while initializing Linda server.", LogLevel.Fatal);
             return;
         }
-        linda.setTimeoutDelay(10);
+        linda.setTimeoutDelay(5);
         serverUrl = linda.getURL();
 
         Manager manager1 = new Manager(new LindaClient(serverUrl), args[1], args[0]);

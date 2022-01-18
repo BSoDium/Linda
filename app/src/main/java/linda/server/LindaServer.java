@@ -25,13 +25,15 @@ import linda.shm.CentralizedLinda;
 
 public class LindaServer extends UnicastRemoteObject implements LindaRemote {
   private Linda linda;
-  private LocalDateTime lastInteraction;
+  private LocalDateTime lastInteraction = LocalDateTime.now();
   private String url;
   /** Inactivity time before the server is shut down (seconds). */
   private int timeoutDelay = 20;
 
   /** Maximum number of retries when trying to bind the server to the registry. */
   private static final int MAX_RETRIES = 20;
+  /** Delay between scheduled timeout checks (seconds). */
+  private static final int TIMEOUT_CHECK_DELAY = 1;
 
   public LindaServer(String host, int port, String path) throws RemoteException {
     linda = new CentralizedLinda();
@@ -140,7 +142,7 @@ public class LindaServer extends UnicastRemoteObject implements LindaRemote {
   private void scheduleTimeoutCheck() {
     new Thread(() -> {
       try {
-        Thread.sleep(timeoutDelay * 1000);
+        Thread.sleep(TIMEOUT_CHECK_DELAY * 1000);
         // stop the server if it has not been interacted with in the last 20 seconds
         if (LocalDateTime.now().isAfter(lastInteraction.plusSeconds(timeoutDelay))) {
           Logger.log(
